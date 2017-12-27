@@ -8,13 +8,20 @@
 #include <string>
 #include <vector>
 
+
+
 class FileWatcher {
 public:
     FileWatcher(std::string);
-    virtual bool start();
-private:
+    virtual void watch() = 0;
+    virtual void stop() = 0;
+    std::vector<std::string> getModified();
+    std::vector<std::string> getDeleted();
+
+protected:
     std::string directory;
     std::vector<std::string> modified;
+    std::vector<std::string> deleted;
 };
 
 #endif //AUTOSCP_FILEWATCHER_H

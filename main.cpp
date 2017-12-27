@@ -1,6 +1,11 @@
 #include <iostream>
-#include <vector>
+#include <fstream>
+#include <stdio.h>
+#include <librsync.h>
 
+
+#include "filewatcher.h"
+#include "filewatcherlinux.h"
 /*
 struct AddOne{
     int foo(int i) {
@@ -21,74 +26,89 @@ int add_one(std::vector<int> expand, func_T func)
 }
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/inotify.h>
-#include <unistd.h>
 
-#define EVENT_SIZE  ( sizeof (struct inotify_event) )
-#define BUF_LEN     ( 1024 * ( EVENT_SIZE + 9 ) )
 
-int main( int argc, char **argv )
+using namespace std;
+typedef std::vector<std::string>::iterator  StrIter;
+
+void testFileWatcher()
 {
-    int length, i = 0;
+    FileWatcherLinux filewatch("/home/justin");
+    filewatch.watch();
 
-    int fd;
-    int wd;
-    char buffer[BUF_LEN];
 
-    fd = inotify_init();
+    std::vector<std::string> modified = filewatch.getModified();
+    std::vector<std::string> deleted = filewatch.getDeleted();
 
-    if ( fd < 0 ) {
-        perror( "inotify_init" );
+    for (StrIter p = modified.begin(); p != modified.end(); p++)
+    {
+        printf("modified file: %s\n", (*p).c_str());
     }
 
-    wd = inotify_add_watch( fd, "/home/justin",
-                            IN_MODIFY | IN_CREATE | IN_DELETE );
-    length = read( fd, buffer, BUF_LEN );
-
-    if ( length < 0 ) {
-        perror( "read" );
-    }
-    printf("length: %d\n", length);
-
-    while ( i < length ) {
-        struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
-        if ( event->len ) {
-            if ( event->mask & IN_CREATE ) {
-                if ( event->mask & IN_ISDIR ) {
-                    printf( "The directory %s was created.\n", event->name );
-                }
-                else {
-                    printf( "The file %s was created.\n", event->name );
-                }
-            }
-            else if ( event->mask & IN_DELETE ) {
-                if ( event->mask & IN_ISDIR ) {
-                    printf( "The directory %s was deleted.\n", event->name );
-                }
-                else {
-                    printf( "The file %s was deleted.\n", event->name );
-                }
-            }
-            else if ( event->mask & IN_MODIFY ) {
-                if ( event->mask & IN_ISDIR ) {
-                    printf( "The directory %s was modified.\n", event->name );
-                }
-                else {
-                    printf( "The file %s was modified.\n", event->name );
-                }
-            }
-        }
-        printf("size: %ld\n", event->len);
-        i += EVENT_SIZE + event->len;
+    for (StrIter p = deleted.begin(); p != deleted.end(); p++)
+    {
+        printf("deleted file: %s\n", (*p).c_str());
     }
 
-    ( void ) inotify_rm_watch( fd, wd );
-    ( void ) close( fd );
+    //std::cout << "changed file\n";
+    filewatch.stop();
+}
 
-    exit( 0 );
+void testSignature()
+{
+    std::ifstream is ("nothing", std::ifstream::binary);
+    char *buffer;
+    int length = 0;
+
+    if (is) {
+        // get length of file:
+        is.seekg(0, is.end);
+        length = is.tellg();
+        is.seekg(0, is.beg);
+
+        // allocate memory:
+        buffer = new char[length];
+
+        // read data as a block:
+        is.read(buffer, length);
+
+        is.close();
+    }
+
+    char *rs_out = new char[length];
+    rs_job_t *job = rs_sig_begin (RS_DEFAULT_BLOCK_LEN,
+                                  RS_MAX_STRONG_SUM_LENGTH, RS_BLAKE2_SIG_MAGIC);
+
+    rs_buffers_t *rs_buffer = new rs_buffers_t;
+
+    rs_buffer->next_in = buffer;
+    rs_buffer->avail_in = length;
+    rs_buffer->eof_in = 0;
+
+    rs_buffer->next_out = rs_out;
+    rs_buffer->avail_out = length;
+
+    rs_job_iter(job, rs_buffer);
+
+    std::ofstream outfile ("new",std::ofstream::binary);
+    outfile.write(rs_out, length - rs_buffer->avail_out);
+
+
+    outfile.close();
+
+
+    delete buffer;
+    delete rs_buffer;
+    delete rs_out;
+}
+
+
+
+
+int main(int argc, char **argv )
+{
+    
+
+    printf("%s", rs_librsync_version);
 }
 

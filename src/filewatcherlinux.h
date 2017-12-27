@@ -8,7 +8,15 @@
 
 class FileWatcherLinux : public FileWatcher
 {
-    FileWatcherLinux(std::string);
+public:
+    FileWatcherLinux(std::string _directory);
+
+
+    void watch();
+    void stop();
+
+private:
+    int fd, wd;
 };
 
 #endif //AUTOSCP_FILEWATCHERLINUX_H

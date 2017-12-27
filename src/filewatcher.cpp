@@ -6,5 +6,15 @@
 
 FileWatcher::FileWatcher(std::string _directory) : directory(_directory)
 {
-};
+    //printf("SSD\n");
+}
 
+std::vector<std::string> FileWatcher::getModified()
+{
+    return modified;
+}
+
+std::vector<std::string> FileWatcher::getDeleted()
+{
+    return deleted;
+}
