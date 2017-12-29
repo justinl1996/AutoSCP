@@ -282,10 +282,11 @@ int show_remote_processes(ssh_session session)
 int main(int argc, char **argv )
 {
     FileWatcherLinux filewatch("/home/justin/test");
-    filewatch.watch();
+    /*filewatch.watch();
     for (auto file: filewatch.getModified()) {
         std::cout << file << std::endl;
     }
+    filewatch.stop();*/
 
 
     printf("END\n");
