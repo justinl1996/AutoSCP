@@ -9,12 +9,12 @@ FileWatcher::FileWatcher(std::string _directory) : directory(_directory)
     //printf("SSD\n");
 }
 
-std::vector<std::string> FileWatcher::getModified()
+std::vector<std::string> FileWatcher::getModified() const
 {
     return modified;
 }
 
-std::vector<std::string> FileWatcher::getDeleted()
+std::vector<std::string> FileWatcher::getDeleted() const
 {
     return deleted;
 }

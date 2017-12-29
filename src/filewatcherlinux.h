@@ -17,6 +17,7 @@ public:
 
 private:
     int fd, wd;
+    std::vector<std::string> get_all_directories(std::string);
 };
 
 #endif //AUTOSCP_FILEWATCHERLINUX_H

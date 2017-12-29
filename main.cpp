@@ -4,8 +4,13 @@
 #include <librsync.h>
 #include <stdlib.h>
 #include <libssh/libssh.h>
+#include <string.h>
+
+#include "sshmanager.h"
+#include "scpmanager.h"
 #include "filewatcher.h"
 #include "filewatcherlinux.h"
+
 
 /*
 struct AddOne{
@@ -267,12 +272,52 @@ int show_remote_processes(ssh_session session)
     return SSH_OK;
 }
 
+#define PI_HOST "192.168.200.2"
+#define PI_USER "pi"
+
+#define MOSS_HOST "moss.labs.eait.uq.edu.au"
+#define MOSS_USER "s4371057"
+
+
 int main(int argc, char **argv )
 {
-    //FileWatcherLinux filewatch("/home/justin");
-    //filewatch.watch();
+    FileWatcherLinux filewatch("/home/justin/test");
+    filewatch.watch();
+    for (auto file: filewatch.getModified()) {
+        std::cout << file << std::endl;
+    }
 
 
+    printf("END\n");
+#if 0
+    SSH_OPTION_T options;
+    options[SSH_OPTIONS_USER] = MOSS_USER;
+    SSHManager ssh(MOSS_HOST, options);
+    //SSHManager ssh( , options);
 
+
+    bool ret;
+    ret = ssh.connect();
+    if (!ret) {
+        //std::cout << "Error Connecting\n";
+        exit(1);
+    }
+
+    char *password = getpass("password: ");
+    ret = ssh.authenticate(password);
+    if (!ret) {
+        //std::cout << "Error Authenticating\n";
+        //ssh.authenticate("maple");
+        exit(1);
+    }
+    std::cout << "SUCCESS\n";
+    ssh_session session = ssh.get_session();
+
+    SCPManager scp(session, SSH_SCP_WRITE);
+    scp.create_directory(session, "SADSDA");
+#endif
+
+    return 0;
 }
+
 

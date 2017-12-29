@@ -26,6 +26,8 @@ SSHManager::SSHManager(std::string _host, SSH_OPTION_T options):
     {
         ssh_options_set(session, it->first, it->second);
     }
+    //ssh_options_set(session, SSH_OPTIONS_USER, "pi");
+
 
 }
 
@@ -47,6 +49,7 @@ bool SSHManager::authenticate(std::string password)
     int rc = ssh_userauth_password(session, NULL, password.c_str());
     if (rc != SSH_AUTH_SUCCESS)
     {
+        //printf("%d %d %d %d %d", rc, SSH_AUTH_DENIED, SSH_AUTH_PARTIAL, SSH_AUTH_ERROR, SSH_AUTH_AGAIN);
         fprintf(stderr, "Error authenticating with password: %s\n",
                 ssh_get_error(session));
         disconnect();

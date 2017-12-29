@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
+#include <iostream>
+#include <dirent.h>
+#include <stack>
 #include <sys/inotify.h>
 #include <unistd.h>
 
@@ -21,6 +24,11 @@ FileWatcherLinux::FileWatcherLinux(std::string directory) :
     if ( fd < 0 ) {
         perror( "inotify_init" );
     }
+    std::vector<std::string> vec = get_all_directories(directory);
+    for (std::string path: vec) {
+        //std::cout << path << std::endl;
+    }
+
 
     wd = inotify_add_watch( fd, directory.c_str(),
                             IN_MODIFY | IN_CREATE | IN_DELETE );
@@ -51,8 +59,43 @@ void FileWatcherLinux::watch()
         //printf("size: %ld\n", event->len);
         i += EVENT_SIZE + event->len;
     }
+}
 
+std::vector<std::string> FileWatcherLinux::get_all_directories(std::string start)
+{
+    std::vector<std::string> directories;
+    std::stack<std::string> st;
 
+    st.push(start);
+    directories.push_back(start);
+
+    while(!st.empty()) {
+        std::string directory = st.top();
+        st.pop();
+
+        DIR *d = opendir(directory.c_str());
+        struct dirent * entry;
+
+        while (1) {
+            entry = readdir(d);
+            if (entry == NULL)
+                break;
+
+            std::string path = entry->d_name;
+            if (entry->d_type & DT_DIR) {
+                if (!(path == "." or path == "..")) {
+                    //printf("%s/%s\n", directory.c_str(), path.c_str());
+                    path = directory + "/" + path;
+                    st.push(path);
+                    directories.push_back(path);
+
+                }
+            }
+            //printf("%s\n", path.c_str());
+        }
+    }
+
+    return directories;
 }
 
 void FileWatcherLinux::stop()

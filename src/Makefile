@@ -179,6 +179,60 @@ filewatcherlinux.cpp.s:
 	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/filewatcherlinux.cpp.s
 .PHONY : filewatcherlinux.cpp.s
 
+scpmanager.o: scpmanager.cpp.o
+
+.PHONY : scpmanager.o
+
+# target to build an object file
+scpmanager.cpp.o:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/scpmanager.cpp.o
+.PHONY : scpmanager.cpp.o
+
+scpmanager.i: scpmanager.cpp.i
+
+.PHONY : scpmanager.i
+
+# target to preprocess a source file
+scpmanager.cpp.i:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/scpmanager.cpp.i
+.PHONY : scpmanager.cpp.i
+
+scpmanager.s: scpmanager.cpp.s
+
+.PHONY : scpmanager.s
+
+# target to generate assembly for a file
+scpmanager.cpp.s:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/scpmanager.cpp.s
+.PHONY : scpmanager.cpp.s
+
+sshmanager.o: sshmanager.cpp.o
+
+.PHONY : sshmanager.o
+
+# target to build an object file
+sshmanager.cpp.o:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/sshmanager.cpp.o
+.PHONY : sshmanager.cpp.o
+
+sshmanager.i: sshmanager.cpp.i
+
+.PHONY : sshmanager.i
+
+# target to preprocess a source file
+sshmanager.cpp.i:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/sshmanager.cpp.i
+.PHONY : sshmanager.cpp.i
+
+sshmanager.s: sshmanager.cpp.s
+
+.PHONY : sshmanager.s
+
+# target to generate assembly for a file
+sshmanager.cpp.s:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/sshmanager.cpp.s
+.PHONY : sshmanager.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -194,6 +248,12 @@ help:
 	@echo "... filewatcherlinux.o"
 	@echo "... filewatcherlinux.i"
 	@echo "... filewatcherlinux.s"
+	@echo "... scpmanager.o"
+	@echo "... scpmanager.i"
+	@echo "... scpmanager.s"
+	@echo "... sshmanager.o"
+	@echo "... sshmanager.i"
+	@echo "... sshmanager.s"
 .PHONY : help
 
 
