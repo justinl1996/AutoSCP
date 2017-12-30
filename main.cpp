@@ -8,6 +8,7 @@
 
 #include "sshmanager.h"
 #include "scpmanager.h"
+#include "filemanager.h"
 #include "filewatcher.h"
 #include "filewatcherlinux.h"
 
@@ -281,16 +282,14 @@ int show_remote_processes(ssh_session session)
 
 int main(int argc, char **argv )
 {
-    FileWatcherLinux filewatch("/home/justin/test");
-    /*filewatch.watch();
-    for (auto file: filewatch.getModified()) {
-        std::cout << file << std::endl;
-    }
-    filewatch.stop();*/
-
-
-    printf("END\n");
 #if 0
+    FileWatcherLinux filewatch("/home/justin/test");
+
+
+    //filewatch.stop();
+#endif
+
+#if 1
     SSH_OPTION_T options;
     options[SSH_OPTIONS_USER] = MOSS_USER;
     SSHManager ssh(MOSS_HOST, options);
@@ -314,10 +313,14 @@ int main(int argc, char **argv )
     std::cout << "SUCCESS\n";
     ssh_session session = ssh.get_session();
 
-    SCPManager scp(session, SSH_SCP_WRITE);
-    scp.create_directory(session, "SADSDA");
+    SCPManager *scp = new SCPManager(session, SSH_SCP_WRITE);
+    //scp.create_directory(session, "SADSDA/asashd/qwey");
 #endif
 
+    FileManager manager("/home/justin/test", "sadasd", *scp);
+    manager.syncAll();
+
+    //printf("END\n");
     return 0;
 }
 

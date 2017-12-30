@@ -125,6 +125,33 @@ src/fast:
 	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/build
 .PHONY : src/fast
 
+__/filemanager.o: __/filemanager.cpp.o
+
+.PHONY : __/filemanager.o
+
+# target to build an object file
+__/filemanager.cpp.o:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.o
+.PHONY : __/filemanager.cpp.o
+
+__/filemanager.i: __/filemanager.cpp.i
+
+.PHONY : __/filemanager.i
+
+# target to preprocess a source file
+__/filemanager.cpp.i:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.i
+.PHONY : __/filemanager.cpp.i
+
+__/filemanager.s: __/filemanager.cpp.s
+
+.PHONY : __/filemanager.s
+
+# target to generate assembly for a file
+__/filemanager.cpp.s:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.s
+.PHONY : __/filemanager.cpp.s
+
 filewatcher.o: filewatcher.cpp.o
 
 .PHONY : filewatcher.o
@@ -242,6 +269,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... src"
+	@echo "... __/filemanager.o"
+	@echo "... __/filemanager.i"
+	@echo "... __/filemanager.s"
 	@echo "... filewatcher.o"
 	@echo "... filewatcher.i"
 	@echo "... filewatcher.s"

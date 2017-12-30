@@ -7,7 +7,9 @@
 #include <iostream>
 #include <sstream>
 #include <string.h>
+#include <fstream>
 #include <fcntl.h>
+#include <bits/ios_base.h>
 #include "scpmanager.h"
 
 
@@ -29,7 +31,7 @@ SCPManager::SCPManager(ssh_session session, int _mode): mode(_mode)
     }
 }
 
-int SCPManager::create_directory(ssh_session session, std::string directory)
+int SCPManager::createDirectory(std::string directory)
 {
 
     int rc;
@@ -38,11 +40,10 @@ int SCPManager::create_directory(ssh_session session, std::string directory)
     {
         if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
         {
-            fprintf(stderr, "Can't create directory: %s\n",
-                    ssh_get_error(session));
+            fprintf(stderr, "Can't create directory\n");
+                    //ssh_get_error(session));
             return rc;
         }
-        fprintf(stderr, "ASDDSDS\n");
     }
 
 
@@ -78,7 +79,30 @@ int SCPManager::create_directory(ssh_session session, std::string directory)
     return SSH_OK;*/
 }
 
-mode_t SCPManager::get_permissions(std::string file)
+int SCPManager::copyFile(std::string source, std::string dest_path)
+{
+    int access = O_WRONLY | O_CREAT;
+    sftp_file file;
+    std::ifstream infile(source, std::ifstream::binary);
+
+
+    infile.seekg (0, infile.end);
+    int length = infile.tellg();
+    infile.seekg (0, infile.beg);
+
+    char *buffer = new char[length];
+    infile.read(buffer, length);
+    infile.close();
+
+#if 1
+    std::ofstream outfile(dest_path, std::ifstream::binary);
+    outfile.write(buffer, length);
+    outfile.close();
+#endif
+    delete [] buffer;
+}
+
+mode_t SCPManager::getPermissions(std::string file)
 {
 #if _WIN32
     return S_IRWXU;

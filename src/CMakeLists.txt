@@ -1,1 +1,1 @@
-add_library(src filewatcherlinux.cpp filewatcher.cpp sshmanager.cpp sshmanager.h scpmanager.cpp scpmanager.h)
+add_library(src filewatcherlinux.cpp filewatcher.cpp sshmanager.cpp sshmanager.h scpmanager.cpp scpmanager.h ../filemanager.cpp ../filemanager.h)

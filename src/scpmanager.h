@@ -20,15 +20,15 @@ public:
     ~SCPManager();
     //bool connect();
     //void disconnect();
-    int create_directory(ssh_session, std::string);
-
+    int createDirectory(std::string);
+    int copyFile(std::string, std::string);
 private:
     //ssh_scp scp;
     //ssh_session session;
     sftp_session sftp;
     int mode;
 
-    mode_t get_permissions(std::string);
+    mode_t getPermissions(std::string);
 };
 
 

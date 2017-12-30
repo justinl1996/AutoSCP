@@ -12,19 +12,24 @@
 
 
 class FileWatcher {
+
 public:
     FileWatcher(std::string);
     virtual void watch() = 0;
     virtual void stop() = 0;
+    void clearAll();
     std::vector<std::string> getModified() const;
     std::vector<std::string> getDeleted() const;
+    std::vector<std::string> getNewfile() const;
     template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T> void
         traverse_directory(std::string, FILE_FUNC_T, DIRECTORY_FUNC_T);
+    static std::string getRootPath(std::string);
 
 protected:
-    std::string directory;
-    std::vector<std::string> modified;
-    std::vector<std::string> deleted;
+    std::string full_path;
+    //std::string root_path;
+    std::vector<std::string> modified, deleted, new_files;
+
 };
 
 template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T>

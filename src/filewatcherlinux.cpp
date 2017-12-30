@@ -25,21 +25,17 @@ FileWatcherLinux::FileWatcherLinux(std::string directory) :
     }
 
     typedef std::vector<std::string> vec_str_t;
-
     vec_str_t directories;
-    vec_str_t files;
 
-    auto file_process = [&](std::string path) {files.push_back(path);};
+    auto file_process = [&](std::string path) {};
     auto directory_process = [&](std::string path) {directories.push_back(path);};
     traverse_directory(directory, file_process, directory_process);
-    /*auto file_process = [=](std::string filename) {std::cout << filename << std::endl;};
-    std::vector<std::string> vec = get_all_directories(directory, file_process);
-    for (std::string path: vec) {
+    for (std::string path: directories) {
         //std::cout << path << std::endl;
         int wd = inotify_add_watch(fd, path.c_str(),
                                    IN_MODIFY | IN_CREATE | IN_DELETE);
         wd_path[wd] = path;
-    }*/
+    }
 }
 
 
@@ -58,7 +54,9 @@ void FileWatcherLinux::watch()
         struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
         if ( event->len ) {
             std::string path = wd_path[event->wd] + "/" + event->name;
-            if ( event->mask & IN_CREATE || event->mask & IN_MODIFY ) {
+            if ( event->mask & IN_CREATE ) {
+                new_files.push_back(path);
+            } else if (event->mask & IN_MODIFY) {
                 modified.push_back(path);
             }
             else if ( event->mask & IN_DELETE ) {
