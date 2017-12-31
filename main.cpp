@@ -317,7 +317,7 @@ int main(int argc, char **argv )
     //scp.create_directory(session, "SADSDA/asashd/qwey");
 #endif
 
-    FileManager manager("/home/justin/test", "sadasd", *scp);
+    FileManager manager("/home/justin/test", "test2", *scp);
     manager.syncAll();
 
     //printf("END\n");

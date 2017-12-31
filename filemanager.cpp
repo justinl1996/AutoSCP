@@ -58,22 +58,32 @@ std::string FileManager::getRelativePath(std::string path, std::string root)
     return path.substr(root.size() + 1, path.length());
 }
 
+std::string FileManager::joinPath(std::string lhs, std::string rhs)
+{
+    return (boost::filesystem::path(lhs) /
+                             boost::filesystem::path(rhs)).make_preferred().string();
+}
+
+
 void FileManager::syncAll()
 {
     std::string root = getParentPath(source);
 
     auto directory_f = [=](std::string dir) {
         std::string path = getRelativePath(dir, root);
-        scp.createDirectory(path);
+        scp.createDirectory(joinPath(dest, path));
+        //std::cout << path << std::endl;
     };
 
     auto file_f = [=](std::string file) {
-        std::cout << "file: " << file << std::endl;
+        //std::cout << "file: " << getRelativePath(file, root) << std::endl;
+
+        scp.copyFile(file, joinPath(dest, getRelativePath(file, root)));
     };
 
 
-    scp.copyFile("/home/justin/fp.cfg", "/home/justin/fp.cfg.bak");
-    //filewatch->traverse_directory(source, file_f, directory_f);
+    //scp.copyFile("/home/justin/fp.cfg", "test/fp.cfg");//"/home/justin/fp.cfg.bak");
+    filewatch->traverse_directory(source, file_f, directory_f);
 
     //scp.create_directory("yellow");
 }

@@ -45,7 +45,7 @@ int SCPManager::createDirectory(std::string directory)
             return rc;
         }
     }
-
+    return SSH_OK;
 
     /*int access_type = O_WRONLY | O_CREAT | O_TRUNC;
     sftp_file file;
@@ -82,6 +82,7 @@ int SCPManager::createDirectory(std::string directory)
 int SCPManager::copyFile(std::string source, std::string dest_path)
 {
     int access = O_WRONLY | O_CREAT;
+    int rc;
     sftp_file file;
     std::ifstream infile(source, std::ifstream::binary);
 
@@ -94,12 +95,28 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     infile.read(buffer, length);
     infile.close();
 
-#if 1
+#if 0
     std::ofstream outfile(dest_path, std::ifstream::binary);
     outfile.write(buffer, length);
     outfile.close();
 #endif
+
+    mode_t permissions = getPermissions(source);
+    file = sftp_open(sftp, dest_path.c_str(), access, permissions);
+    if (file == NULL) {
+        fprintf(stderr, "Cannot open file %s for writing\n", dest_path.c_str());
+        return SSH_ERROR;
+    }
+
+    int nwritten = sftp_write(file, buffer, length);
+    if (nwritten != length) {
+        fprintf(stderr, "Cannot write data to file %s", source.c_str());
+        return SSH_ERROR;
+    }
+    sftp_close(file);
+
     delete [] buffer;
+    return SSH_OK;
 }
 
 mode_t SCPManager::getPermissions(std::string file)
