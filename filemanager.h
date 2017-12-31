@@ -18,11 +18,6 @@ public:
     void start();
     void syncAll();
 
-    //todo: put static methods into their own class
-    static std::string getParentPath(std::string);
-    static std::string getEndPath(std::string);
-    static std::string getRelativePath(std::string, std::string);
-    static std::string joinPath(std::string lhs, std::string rhs);
 private:
 
     std::string source, dest;

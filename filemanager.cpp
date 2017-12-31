@@ -4,6 +4,7 @@
 
 #include "filemanager.h"
 #include "filewatcher.h"
+#include "fileutils.h"
 #ifndef _WIN32
 #include "filewatcherlinux.h"
 #endif
@@ -21,64 +22,47 @@ FileManager::FileManager(std::string _source, std::string _dest, SCPManager &_sc
 
 void FileManager::start()
 {
+    std::string root = FileUtils::getParentPath(source);
+
     while(true) {
         filewatch->watch();
 
         std::cout << "NewFile: \n";
         for (auto file: filewatch->getNewfile()) {
             std::cout << file << std::endl;
-            filewatch->getRootPath(file);
+            //filewatch->getRootPath(file);
+            //std::cout << getRelativePath(file, root) << std::endl;
+            scp.copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
         }
 
         std::cout << "Modified: \n";
         for (auto file: filewatch->getModified()) {
             std::cout << file << std::endl;
+            scp.copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
         }
         std::cout << "Deleted: \n";
         for (auto file: filewatch->getDeleted()) {
             std::cout << file << std::endl;
         }
+        filewatch->clearAll();
+
     }
 }
 
-std::string FileManager::getParentPath(std::string path)
-{
-    boost::filesystem::path p(path);
-    return p.parent_path().string();
-}
-
-std::string FileManager::getEndPath(std::string path)
-{
-    boost::filesystem::path p(path);
-    return p.stem().string();
-}
-
-std::string FileManager::getRelativePath(std::string path, std::string root)
-{
-    return path.substr(root.size() + 1, path.length());
-}
-
-std::string FileManager::joinPath(std::string lhs, std::string rhs)
-{
-    return (boost::filesystem::path(lhs) /
-                             boost::filesystem::path(rhs)).make_preferred().string();
-}
-
-
 void FileManager::syncAll()
 {
-    std::string root = getParentPath(source);
+    std::string root = FileUtils::getParentPath(source);
 
     auto directory_f = [=](std::string dir) {
-        std::string path = getRelativePath(dir, root);
-        scp.createDirectory(joinPath(dest, path));
+        std::string path = FileUtils::getRelativePath(dir, root);
+        scp.createDirectory(FileUtils::joinPath(dest, path));
         //std::cout << path << std::endl;
     };
 
     auto file_f = [=](std::string file) {
         //std::cout << "file: " << getRelativePath(file, root) << std::endl;
 
-        scp.copyFile(file, joinPath(dest, getRelativePath(file, root)));
+        scp.copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
     };
 
 

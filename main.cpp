@@ -319,7 +319,7 @@ int main(int argc, char **argv )
 
     FileManager manager("/home/justin/test", "test2", *scp);
     manager.syncAll();
-
+    manager.start();
     //printf("END\n");
     return 0;
 }
