@@ -44,10 +44,10 @@ void testFileWatcher()
     filewatch.watch();
 
 
-    std::vector<std::string> modified = filewatch.getModified();
-    std::vector<std::string> deleted = filewatch.getDeleted();
+    //std::vector<std::string> modified = filewatch.getModified();
+    //std::vector<std::string> deleted = filewatch.getDeleted();
 
-    for (StrIter p = modified.begin(); p != modified.end(); p++)
+    /*for (StrIter p = modified.begin(); p != modified.end(); p++)
     {
         printf("modified file: %s\n", (*p).c_str());
     }
@@ -55,7 +55,7 @@ void testFileWatcher()
     for (StrIter p = deleted.begin(); p != deleted.end(); p++)
     {
         printf("deleted file: %s\n", (*p).c_str());
-    }
+    }*/
 
     //std::cout << "changed file\n";
     filewatch.stop();

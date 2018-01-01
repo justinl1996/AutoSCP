@@ -9,6 +9,7 @@
 #include <string.h>
 #include <fstream>
 #include <fcntl.h>
+#include <vector>
 #include <bits/ios_base.h>
 #include "scpmanager.h"
 

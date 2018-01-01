@@ -8,20 +8,48 @@
 #include <string>
 #include <vector>
 #include <stack>
-#include <boost/filesystem.hpp>
 
+#include <boost/filesystem.hpp>
+//#include <boost/thread.hpp>
+#include <boost/thread/shared_mutex.hpp>
+
+template <class T>
+class VectorS : public std::vector<T>
+{
+public:
+    bool empty() {
+        shared.lock();
+        bool ret = std::vector<T>::empty();
+        shared.unlock();
+        return ret;
+    }
+
+    T pop() {
+        shared.lock();
+        T item = std::vector<T>::back();
+        std::vector<T>::pop_back();
+        shared.unlock();
+        return item;
+    };
+    void push_back(T item) {
+        shared.lock();
+        std::vector<T>::push_back(item);
+        shared.unlock();
+    };
+
+    boost::shared_mutex shared;
+};
 
 class FileWatcher {
-
 public:
     FileWatcher(std::string);
     virtual void watch() = 0;
     virtual void stop() = 0;
     bool isIgnore(std::string);
     void clearAll();
-    std::vector<std::string> getModified() const;
-    std::vector<std::string> getDeleted() const;
-    std::vector<std::string> getNewfile() const;
+    std::string getModified();
+    std::string getDeleted();
+    std::string getNewfile();
     template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T> void
         traverse_directory(std::string, FILE_FUNC_T, DIRECTORY_FUNC_T);
     static std::string getRootPath(std::string);
@@ -30,7 +58,9 @@ public:
 protected:
     std::string full_path;
     //std::string root_path;
-    std::vector<std::string> modified, deleted, new_files;
+    VectorS<std::string> modified, deleted, new_files;
+private:
+    //boost::shared_mutex shared;
 
 };
 

@@ -6,6 +6,9 @@
 #include <boost/filesystem.hpp>
 #include "filewatcher.h"
 
+
+
+
 FileWatcher::FileWatcher(std::string _path) : full_path(_path)
 {
     //using namespace boost::filesystem;
@@ -39,7 +42,8 @@ void FileWatcher::clearAll()
     new_files.clear();
     modified.clear();
     deleted.clear();
-    std::cout << new_files.size() << std::endl;
+
+    //std::cout << new_files.size() << std::endl;
 }
 
 //todo: allow user to input directory + files to ignore
@@ -49,18 +53,40 @@ bool FileWatcher::isIgnore(std::string file)
     return file.at(0) == '.' ? true : false;
 }
 
-std::vector<std::string> FileWatcher::getNewfile() const
+std::string FileWatcher::getNewfile()
 {
-    return new_files;
+    //return new_files;
+    //shared.lock();
+    if (new_files.empty()) {
+        //shared.unlock();
+        return "";
+    }
+    //std::string temp = new_files.back();
+    //new_files.pop_back();
+    //shared.unlock();
+    return new_files.pop();
 }
 
-std::vector<std::string> FileWatcher::getModified() const
+std::string FileWatcher::getModified()
 {
-    return modified;
+    //shared.lock();
+    if (modified.empty()) {
+        //shared.unlock();
+        return "";
+    }
+    //std::string temp = modified.back();
+    //modified.pop_back();
+    //shared.unlock();
+    return modified.pop();
 }
 
-std::vector<std::string> FileWatcher::getDeleted() const
+std::string FileWatcher::getDeleted()
 {
-    return deleted;
+    if (deleted.empty()) {
+        return "";
+    }
+    //std::string temp = deleted.back();
+    //deleted.pop_back();
+    return deleted.pop();
 }
 

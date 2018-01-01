@@ -5,6 +5,7 @@
 #ifndef AUTOSCP_FILEMANAGER_H
 #define AUTOSCP_FILEMANAGER_H
 #include <iostream>
+#include <vector>
 #include "scpmanager.h"
 #include "filewatcher.h"
 

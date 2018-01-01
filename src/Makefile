@@ -125,32 +125,32 @@ src/fast:
 	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/build
 .PHONY : src/fast
 
-__/filemanager.o: __/filemanager.cpp.o
+filemanager.o: filemanager.cpp.o
 
-.PHONY : __/filemanager.o
+.PHONY : filemanager.o
 
 # target to build an object file
-__/filemanager.cpp.o:
-	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.o
-.PHONY : __/filemanager.cpp.o
+filemanager.cpp.o:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/filemanager.cpp.o
+.PHONY : filemanager.cpp.o
 
-__/filemanager.i: __/filemanager.cpp.i
+filemanager.i: filemanager.cpp.i
 
-.PHONY : __/filemanager.i
+.PHONY : filemanager.i
 
 # target to preprocess a source file
-__/filemanager.cpp.i:
-	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.i
-.PHONY : __/filemanager.cpp.i
+filemanager.cpp.i:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/filemanager.cpp.i
+.PHONY : filemanager.cpp.i
 
-__/filemanager.s: __/filemanager.cpp.s
+filemanager.s: filemanager.cpp.s
 
-.PHONY : __/filemanager.s
+.PHONY : filemanager.s
 
 # target to generate assembly for a file
-__/filemanager.cpp.s:
-	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/__/filemanager.cpp.s
-.PHONY : __/filemanager.cpp.s
+filemanager.cpp.s:
+	cd /home/justin/CLionProjects/AutoSCP && $(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/filemanager.cpp.s
+.PHONY : filemanager.cpp.s
 
 filewatcher.o: filewatcher.cpp.o
 
@@ -269,9 +269,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... src"
-	@echo "... __/filemanager.o"
-	@echo "... __/filemanager.i"
-	@echo "... __/filemanager.s"
+	@echo "... filemanager.o"
+	@echo "... filemanager.i"
+	@echo "... filemanager.s"
 	@echo "... filewatcher.o"
 	@echo "... filewatcher.i"
 	@echo "... filewatcher.s"

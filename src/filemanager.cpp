@@ -29,20 +29,21 @@ void FileManager::start()
         filewatch->watch();
 
         std::cout << "NewFile: \n";
-        for (auto file: filewatch->getNewfile()) {
+        //for (auto file: filewatch->getNewfile()) {
+        std::string file;
+        while ((file = filewatch->getNewfile()) != "") {
             std::cout << file << std::endl;
-            //filewatch->getRootPath(file);
-            //std::cout << getRelativePath(file, root) << std::endl;
             scp->copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
         }
+            //}
 
         std::cout << "Modified: \n";
-        for (auto file: filewatch->getModified()) {
+        while ((file = filewatch->getModified()) != "") {
             std::cout << file << std::endl;
             scp->copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
         }
         std::cout << "Deleted: \n";
-        for (auto file: filewatch->getDeleted()) {
+        while ((file = filewatch->getDeleted()) != "") {
 
             std::cout << file << std::endl;
             scp->deleteFile(FileUtils::getRelativePath(file, root));

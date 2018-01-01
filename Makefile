@@ -136,33 +136,6 @@ src/fast:
 	$(MAKE) -f src/CMakeFiles/src.dir/build.make src/CMakeFiles/src.dir/build
 .PHONY : src/fast
 
-fileutils.o: fileutils.cpp.o
-
-.PHONY : fileutils.o
-
-# target to build an object file
-fileutils.cpp.o:
-	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/fileutils.cpp.o
-.PHONY : fileutils.cpp.o
-
-fileutils.i: fileutils.cpp.i
-
-.PHONY : fileutils.i
-
-# target to preprocess a source file
-fileutils.cpp.i:
-	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/fileutils.cpp.i
-.PHONY : fileutils.cpp.i
-
-fileutils.s: fileutils.cpp.s
-
-.PHONY : fileutils.s
-
-# target to generate assembly for a file
-fileutils.cpp.s:
-	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/fileutils.cpp.s
-.PHONY : fileutils.cpp.s
-
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -190,6 +163,33 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+src/fileutils.o: src/fileutils.cpp.o
+
+.PHONY : src/fileutils.o
+
+# target to build an object file
+src/fileutils.cpp.o:
+	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/src/fileutils.cpp.o
+.PHONY : src/fileutils.cpp.o
+
+src/fileutils.i: src/fileutils.cpp.i
+
+.PHONY : src/fileutils.i
+
+# target to preprocess a source file
+src/fileutils.cpp.i:
+	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/src/fileutils.cpp.i
+.PHONY : src/fileutils.cpp.i
+
+src/fileutils.s: src/fileutils.cpp.s
+
+.PHONY : src/fileutils.s
+
+# target to generate assembly for a file
+src/fileutils.cpp.s:
+	$(MAKE) -f CMakeFiles/AutoSCP.dir/build.make CMakeFiles/AutoSCP.dir/src/fileutils.cpp.s
+.PHONY : src/fileutils.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -200,12 +200,12 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... AutoSCP"
 	@echo "... src"
-	@echo "... fileutils.o"
-	@echo "... fileutils.i"
-	@echo "... fileutils.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... src/fileutils.o"
+	@echo "... src/fileutils.i"
+	@echo "... src/fileutils.s"
 .PHONY : help
 
 
