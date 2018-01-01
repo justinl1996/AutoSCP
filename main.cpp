@@ -292,34 +292,36 @@ int main(int argc, char **argv )
 #if 1
     SSH_OPTION_T options;
     options[SSH_OPTIONS_USER] = MOSS_USER;
-    SSHManager ssh(MOSS_HOST, options);
+    auto ssh = std::unique_ptr<SSHManager>(new SSHManager(MOSS_HOST, options));
     //SSHManager ssh( , options);
 
 
     bool ret;
-    ret = ssh.connect();
+    ret = ssh->connect();
     if (!ret) {
         //std::cout << "Error Connecting\n";
         exit(1);
     }
 
     char *password = getpass("password: ");
-    ret = ssh.authenticate(password);
+    ret = ssh->authenticate(password);
     if (!ret) {
         //std::cout << "Error Authenticating\n";
         //ssh.authenticate("maple");
         exit(1);
     }
     std::cout << "SUCCESS\n";
-    ssh_session session = ssh.get_session();
-
-    SCPManager *scp = new SCPManager(session, SSH_SCP_WRITE);
+    //ssh_session session = ssh.get_session();
+    //SCPManager *scp = new SCPManager(std::move(ssh), SSH_SCP_WRITE);
     //scp.create_directory(session, "SADSDA/asashd/qwey");
 #endif
-
-    FileManager manager("/home/justin/test", "test2", *scp);
+#if 1
+    FileManager manager("/home/justin/test", "", std::move(ssh));
     manager.syncAll();
     manager.start();
+#endif
+
+
     //printf("END\n");
     return 0;
 }

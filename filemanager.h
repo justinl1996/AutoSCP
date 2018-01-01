@@ -13,7 +13,7 @@ class FileManager
 {
 
 public:
-    FileManager(std::string, std::string, SCPManager &);
+    FileManager(std::string, std::string, SCPManager::ssh_ptr_t ssh);
     //~FileManager() {std::cout << "IN DESTRUCTOR\n";};
     void start();
     void syncAll();
@@ -22,7 +22,7 @@ private:
 
     std::string source, dest;
     std::unique_ptr<FileWatcher> filewatch;
-    SCPManager &scp;
+    std::unique_ptr<SCPManager> scp;
 
 };
 

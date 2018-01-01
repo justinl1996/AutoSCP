@@ -13,8 +13,9 @@
 #include "scpmanager.h"
 
 
-SCPManager::SCPManager(ssh_session session, int _mode): mode(_mode)
+SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_ssh))
 {
+    ssh_session session = ssh->get_session();
     sftp = sftp_new(session);
     if (sftp == NULL)
     {
@@ -31,6 +32,7 @@ SCPManager::SCPManager(ssh_session session, int _mode): mode(_mode)
     }
 }
 
+
 int SCPManager::createDirectory(std::string directory)
 {
 
@@ -40,7 +42,7 @@ int SCPManager::createDirectory(std::string directory)
     {
         if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
         {
-            fprintf(stderr, "Can't create directory\n");
+            fprintf(stderr, "Can't create directory %s\n", directory.c_str());
                     //ssh_get_error(session));
             return rc;
         }
@@ -77,6 +79,15 @@ int SCPManager::createDirectory(std::string directory)
         return rc;
     }
     return SSH_OK;*/
+}
+
+int SCPManager::deleteFile(std::string file)
+{
+    int rc = sftp_unlink(sftp, file.c_str());
+    if (rc) {
+        fprintf(stderr, "Error deleting file: %s\n", file.c_str());
+    }
+    return SSH_OK;
 }
 
 int SCPManager::copyFile(std::string source, std::string dest_path)
