@@ -42,6 +42,13 @@ void FileWatcher::clearAll()
     std::cout << new_files.size() << std::endl;
 }
 
+//todo: allow user to input directory + files to ignore
+bool FileWatcher::isIgnore(std::string file)
+{
+    //just ignore hidden files for now
+    return file.at(0) == '.' ? true : false;
+}
+
 std::vector<std::string> FileWatcher::getNewfile() const
 {
     return new_files;

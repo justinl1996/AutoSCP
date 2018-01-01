@@ -13,7 +13,10 @@
 #if __linux__
 #include <sys/stat.h>
 #endif
+
+
 class SCPManager {
+
 public:
     typedef std::unique_ptr<SSHManager> ssh_ptr_t;
 
@@ -24,6 +27,7 @@ public:
     int createDirectory(std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);
+
 private:
     //ssh_scp scp;
     //ssh_session session;

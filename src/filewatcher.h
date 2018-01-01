@@ -17,6 +17,7 @@ public:
     FileWatcher(std::string);
     virtual void watch() = 0;
     virtual void stop() = 0;
+    bool isIgnore(std::string);
     void clearAll();
     std::vector<std::string> getModified() const;
     std::vector<std::string> getDeleted() const;
@@ -24,6 +25,7 @@ public:
     template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T> void
         traverse_directory(std::string, FILE_FUNC_T, DIRECTORY_FUNC_T);
     static std::string getRootPath(std::string);
+
 
 protected:
     std::string full_path;

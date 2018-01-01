@@ -11,6 +11,7 @@
 #include <dirent.h>
 #include <stack>
 #include <sys/inotify.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 static const int EVENT_SIZE =  ( sizeof (struct inotify_event) );
@@ -44,27 +45,48 @@ void FileWatcherLinux::watch()
     int length, i = 0;
     char buffer[BUF_LEN];
 
-    length = read( fd, buffer, BUF_LEN );
+    struct timeval tv;
+    tv.tv_sec = 3;
+    tv.tv_usec = 0;
 
-    if ( length < 0 ) {
-        perror( "read" );
-    }
+    fd_set rfds;
 
-    while ( i < length ) {
-        struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ];
-        if ( event->len ) {
-            std::string path = wd_path[event->wd] + "/" + event->name;
-            if ( event->mask & IN_CREATE ) {
-                new_files.push_back(path);
-            } else if (event->mask & IN_MODIFY) {
-                modified.push_back(path);
-            }
-            else if ( event->mask & IN_DELETE ) {
-                deleted.push_back(path);
-            }
+    FD_ZERO(&rfds);
+    FD_SET(fd, &rfds);
+
+    int ret = select(fd+1, &rfds, NULL, NULL, &tv);
+    if (ret < 0) {
+        perror("select");
+    } else if (!ret) {
+        printf("Nothing for 3s\n");
+    } else {
+        length = read(fd, buffer, BUF_LEN);
+
+        if (length < 0) {
+            perror("read");
         }
-        //printf("size: %ld\n", event->len);
-        i += EVENT_SIZE + event->len;
+
+        while (i < length) {
+            struct inotify_event *event = (struct inotify_event *) &buffer[i];
+            if (event->len) {
+                std::string path = wd_path[event->wd] + "/" + event->name;
+
+                if (isIgnore(event->name)) {
+                    continue;
+                }
+
+                if (event->mask & IN_CREATE) {
+                    //printf("event->name: %s\n", event->name);
+                    new_files.push_back(path);
+                } else if (event->mask & IN_MODIFY) {
+                    modified.push_back(path);
+                } else if (event->mask & IN_DELETE) {
+                    deleted.push_back(path);
+                }
+            }
+            //printf("size: %ld\n", event->len);
+            i += EVENT_SIZE + event->len;
+        }
     }
 }
 
