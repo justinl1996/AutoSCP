@@ -20,11 +20,13 @@ public:
     bool connect();
     bool authenticate(std::string);
     void disconnect();
+    void send_ignore();
     ssh_session get_session() const {return session;};
 
 private:
     ssh_session session;
     std::string host;
+    int verify_unknownhost();
     //std::string password;
     //std::string directory;
 };

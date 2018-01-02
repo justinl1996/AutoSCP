@@ -123,6 +123,7 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     if (file == NULL) {
         fprintf(stderr, "Cannot open file %s for writing. Error: %s\n", dest_path.c_str(),
                 ssh_get_error(ssh->get_session()));
+
         return SSH_ERROR;
     }
 
@@ -135,6 +136,11 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
 
     delete [] buffer;
     return SSH_OK;
+}
+
+void SCPManager::ping()
+{
+    ssh->send_ignore();
 }
 
 mode_t SCPManager::getPermissions(std::string file)

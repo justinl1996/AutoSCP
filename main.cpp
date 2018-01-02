@@ -279,6 +279,29 @@ int show_remote_processes(ssh_session session)
 #define MOSS_HOST "moss.labs.eait.uq.edu.au"
 #define MOSS_USER "s4371057"
 
+class A {
+public:
+    int i;
+    A() {
+        i = 0;
+    }
+
+    void foo() {
+        //printf("IN THREAD");
+        std::cout << "IN THREAD\n" << std::endl;
+        i += 5;
+        return ;
+    }
+
+};
+
+void hello_world()
+{
+    printf("ASDSAD");
+}
+
+#include <boost/thread.hpp>
+
 
 int main(int argc, char **argv )
 {
@@ -320,9 +343,18 @@ int main(int argc, char **argv )
     manager.syncAll();
     manager.start();
 #endif
+#if 0
+    A a;
+    boost::thread *th = new boost::thread(boost::bind(&A::foo, &a));
 
+    //boost::thread *th = new boost::thread(hello_world);
 
     //printf("END\n");
+    //th->join();
+    th->join();
+    printf("i: %d\n", a.i);
+    //while(1) {} ;
+#endif
     return 0;
 }
 

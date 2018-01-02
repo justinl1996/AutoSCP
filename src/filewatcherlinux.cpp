@@ -42,50 +42,56 @@ FileWatcherLinux::FileWatcherLinux(std::string directory) :
 
 void FileWatcherLinux::watch()
 {
-    int length, i = 0;
+    int length, i;
     char buffer[BUF_LEN];
 
     struct timeval tv;
-    tv.tv_sec = 3;
-    tv.tv_usec = 0;
+
 
     fd_set rfds;
 
-    FD_ZERO(&rfds);
-    FD_SET(fd, &rfds);
+    while(1) {
+        tv.tv_sec = 3;
+        tv.tv_usec = 0;
+        i = 0;
 
-    int ret = select(fd+1, &rfds, NULL, NULL, &tv);
-    if (ret < 0) {
-        perror("select");
-    } else if (!ret) {
-        printf("Nothing for 3s\n");
-    } else {
-        length = read(fd, buffer, BUF_LEN);
+        FD_ZERO(&rfds);
+        FD_SET(fd, &rfds);
 
-        if (length < 0) {
-            perror("read");
-        }
+        int ret = select(fd + 1, &rfds, NULL, NULL, &tv);
+        if (ret < 0) {
+            perror("select");
+        } else if (!ret) {
+            printf("Nothing for 3s\n");
 
-        while (i < length) {
-            struct inotify_event *event = (struct inotify_event *) &buffer[i];
-            if (event->len) {
-                std::string path = wd_path[event->wd] + "/" + event->name;
+        } else {
+            length = read(fd, buffer, BUF_LEN);
 
-                if (isIgnore(event->name)) {
-                    continue;
-                }
-
-                if (event->mask & IN_CREATE) {
-                    //printf("event->name: %s\n", event->name);
-                    new_files.push_back(path);
-                } else if (event->mask & IN_MODIFY) {
-                    modified.push_back(path);
-                } else if (event->mask & IN_DELETE) {
-                    deleted.push_back(path);
-                }
+            if (length < 0) {
+                perror("read");
             }
-            //printf("size: %ld\n", event->len);
-            i += EVENT_SIZE + event->len;
+
+            while (i < length) {
+                struct inotify_event *event = (struct inotify_event *) &buffer[i];
+                if (event->len) {
+                    std::string path = wd_path[event->wd] + "/" + event->name;
+                    printf("HERE\n");
+                    if (isIgnore(event->name)) {
+                        continue;
+                    }
+
+                    if (event->mask & IN_CREATE) {
+                        //printf("event->name: %s\n", event->name);
+                        new_files.push_back(path);
+                    } else if (event->mask & IN_MODIFY) {
+                        modified.push_back(path);
+                    } else if (event->mask & IN_DELETE) {
+                        deleted.push_back(path);
+                    }
+                }
+                //printf("size: %ld\n", event->len);
+                i += EVENT_SIZE + event->len;
+            }
         }
     }
 }
