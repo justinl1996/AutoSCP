@@ -99,21 +99,21 @@ int SSHManager::verify_unknownhost()
             hexa = ssh_get_hexa(hash, hlen);
             fprintf(stderr,"The server is unknown. Do you trust the host key?\n");
             fprintf(stderr, "Public key hash: %s\n", hexa);
-            free(hexa);
+            //free(hexa);
             if (fgets(buf, sizeof(buf), stdin) == NULL)
             {
-                free(hash);
+                //free(hash);
                 return -1;
             }
-            if (strncasecmp(buf, "yes", 3) != 0)
+            if (strcmp(buf, "yes") != 0)
             {
-                free(hash);
+                //free(hash);
                 return -1;
             }
             if (ssh_write_knownhost(session) < 0)
             {
                 fprintf(stderr, "Error %s\n", strerror(errno));
-                free(hash);
+                //free(hash);
                 return -1;
             }
             break;
@@ -122,7 +122,8 @@ int SSHManager::verify_unknownhost()
             free(hash);
             return -1;
     }
-    free(hash);
+
+    //free(hash);
     return 0;
 }
 

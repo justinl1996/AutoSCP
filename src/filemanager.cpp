@@ -26,12 +26,15 @@ void FileManager::start()
 {
     std::string root = FileUtils::getParentPath(source);
 
-    auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
+    //auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
+
 
 
     while(true) {
         //std::cout << "NewFile: \n";
         //for (auto file: filewatch->getNewfile()) {
+		//filewatch->watch();
+
         std::string file;
         while ((file = filewatch->getNewfile()) != "") {
             std::cout << file << std::endl;
@@ -53,7 +56,8 @@ void FileManager::start()
             //fprintf(stderr, "%s\n", sftp_get_error(scp.get));
         }
         filewatch->clearAll();
-        usleep(500);
+
+        //usleep(500);
         scp->ping();
     }
 }

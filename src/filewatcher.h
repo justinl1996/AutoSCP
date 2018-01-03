@@ -18,23 +18,23 @@ class VectorS : public std::vector<T>
 {
 public:
     bool empty() {
-        shared.lock();
+        //shared.lock();
         bool ret = std::vector<T>::empty();
-        shared.unlock();
+        //shared.unlock();
         return ret;
     }
 
     T pop() {
-        shared.lock();
+        //shared.lock();
         T item = std::vector<T>::back();
         std::vector<T>::pop_back();
-        shared.unlock();
+        //shared.unlock();
         return item;
     };
     void push_back(T item) {
-        shared.lock();
+        //shared.lock();
         std::vector<T>::push_back(item);
-        shared.unlock();
+        //shared.unlock();
     };
 
     boost::shared_mutex shared;

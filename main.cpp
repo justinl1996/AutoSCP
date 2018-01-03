@@ -65,27 +65,6 @@ std::string getpass(const char *prompt, bool show_asterisk = true)
 
 #endif
 
-class A {
-public:
-    int i;
-    A() {
-        i = 0;
-    }
-
-    void foo() {
-        //printf("IN THREAD");
-        std::cout << "IN THREAD\n" << std::endl;
-        i += 5;
-        return ;
-    }
-
-};
-
-void hello_world()
-{
-    printf("ASDSAD");
-}
-
 #include <boost/thread.hpp>
 
 class A {

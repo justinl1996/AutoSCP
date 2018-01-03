@@ -10,7 +10,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <vector>
-#include <bits/ios_base.h>
+//#include <bits/ios_base.h>
 #include "scpmanager.h"
 
 
@@ -38,7 +38,7 @@ int SCPManager::createDirectory(std::string directory)
 {
 
     int rc;
-    rc = sftp_mkdir(sftp, directory.c_str(), S_IRWXU);
+	rc = sftp_mkdir(sftp, directory.c_str(), 0x0);//S_IRWXU);
     if (rc != SSH_OK)
     {
         if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
@@ -146,7 +146,7 @@ void SCPManager::ping()
 mode_t SCPManager::getPermissions(std::string file)
 {
 #if _WIN32
-    return S_IRWXU;
+	return 0x0;//S_IRWXU;
 #else
     struct stat buf;
     stat(file.c_str(), &buf);

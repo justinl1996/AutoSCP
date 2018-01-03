@@ -11,5 +11,5 @@ include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_subdirectory (src)
 
 add_executable(AutoSCP main.cpp src/fileutils.cpp src/fileutils.h)
-target_link_libraries (AutoSCP src rsync ssh ${Boost_LIBRARIES} boost_thread pthread)
+target_link_libraries (AutoSCP src ssh ${Boost_LIBRARIES} boost_thread)
 #LINK_DIRECTORIES()
