@@ -24,6 +24,7 @@ public:
     ~SCPManager();
     //bool connect();
     //void disconnect();
+    void ping();
     int createDirectory(std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);

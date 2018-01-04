@@ -2,6 +2,7 @@
 // Created by justin on 30/12/17.
 //
 
+#include <boost/thread.hpp>
 #include "filemanager.h"
 #include "filewatcher.h"
 #include "fileutils.h"
@@ -25,10 +26,11 @@ void FileManager::start()
 {
     std::string root = FileUtils::getParentPath(source);
 
-    while(true) {
-        filewatch->watch();
+    auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
 
-        std::cout << "NewFile: \n";
+
+    while(true) {
+        //std::cout << "NewFile: \n";
         //for (auto file: filewatch->getNewfile()) {
         std::string file;
         while ((file = filewatch->getNewfile()) != "") {
@@ -37,12 +39,12 @@ void FileManager::start()
         }
             //}
 
-        std::cout << "Modified: \n";
+        //std::cout << "Modified: \n";
         while ((file = filewatch->getModified()) != "") {
             std::cout << file << std::endl;
             scp->copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
         }
-        std::cout << "Deleted: \n";
+        //std::cout << "Deleted: \n";
         while ((file = filewatch->getDeleted()) != "") {
 
             std::cout << file << std::endl;
@@ -51,7 +53,8 @@ void FileManager::start()
             //fprintf(stderr, "%s\n", sftp_get_error(scp.get));
         }
         filewatch->clearAll();
-
+        usleep(500);
+        scp->ping();
     }
 }
 
