@@ -34,7 +34,8 @@ FileWatcherLinux::FileWatcherLinux(std::string directory) :
     for (std::string path: directories) {
         //std::cout << path << std::endl;
         int wd = inotify_add_watch(fd, path.c_str(),
-                                   IN_MODIFY | IN_CREATE | IN_DELETE);
+                                   IN_MODIFY | IN_CREATE | IN_DELETE
+                                   | IN_MOVED_FROM | IN_MOVED_TO);
         wd_path[wd] = path;
     }
 }
@@ -44,9 +45,8 @@ void FileWatcherLinux::watch()
 {
     int length, i;
     char buffer[BUF_LEN];
-
     struct timeval tv;
-
+    std::string original_name = "";
 
     fd_set rfds;
 
@@ -70,30 +70,48 @@ void FileWatcherLinux::watch()
             if (length < 0) {
                 perror("read");
             }
-
+            //printf("HERE\n");
+            //printf("length: %d, i: %d\n", length, i);
             while (i < length) {
                 struct inotify_event *event = (struct inotify_event *) &buffer[i];
                 if (event->len) {
                     std::string path = wd_path[event->wd] + "/" + event->name;
-                    printf("HERE\n");
+                    //printf("HERE\n");
                     if (isIgnore(event->name)) {
                         continue;
+                        //return;
                     }
 
                     if (event->mask & IN_CREATE) {
                         //printf("event->name: %s\n", event->name);
                         new_files.push_back(path);
+                        //printf("new file: %s\n", path.c_str());
                     } else if (event->mask & IN_MODIFY) {
                         modified.push_back(path);
+                        //printf("modified: %s\n", path.c_str());
                     } else if (event->mask & IN_DELETE) {
                         deleted.push_back(path);
+                        //printf("deleted: %s\n", path.c_str());
+                    } else if (event->mask & IN_MOVED_FROM) {
+                        //printf("moved from: %s\n", path.c_str());
+                        original_name = path;
+                    } else if (event->mask & IN_MOVED_TO) {
+                        printf("moved to: %s\n", path.c_str());
+                        if (original_name == "") {
+                            new_files.push_back(path);
+                        } else {
+                            r_pair_t pair = std::make_pair(original_name, path);
+                            renamed.push_back(pair);
+                            original_name = "";
+                        }
                     }
                 }
                 //printf("size: %ld\n", event->len);
                 i += EVENT_SIZE + event->len;
+                //printf("i now: %d\n", i);
             }
         }
-    }
+   }
 }
 
 
