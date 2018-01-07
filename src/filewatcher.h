@@ -42,6 +42,8 @@ public:
 
 class FileWatcher {
 public:
+    typedef std::pair<std::string, std::string> r_pair_t;
+
     FileWatcher(std::string);
     virtual void watch() = 0;
     virtual void stop() = 0;
@@ -50,6 +52,7 @@ public:
     std::string getModified();
     std::string getDeleted();
     std::string getNewfile();
+    r_pair_t getRenamed();
     template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T> void
         traverse_directory(std::string, FILE_FUNC_T, DIRECTORY_FUNC_T);
     static std::string getRootPath(std::string);
@@ -59,6 +62,7 @@ protected:
     std::string full_path;
     //std::string root_path;
     VectorS<std::string> modified, deleted, new_files;
+    VectorS<r_pair_t> renamed;
 private:
     //boost::shared_mutex shared;
 

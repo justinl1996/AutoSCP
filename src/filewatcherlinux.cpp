@@ -70,22 +70,24 @@ void FileWatcherLinux::watch()
             if (length < 0) {
                 perror("read");
             }
-            //printf("HERE\n");
-            //printf("length: %d, i: %d\n", length, i);
             while (i < length) {
                 struct inotify_event *event = (struct inotify_event *) &buffer[i];
+
+                i += EVENT_SIZE + event->len;
+                //printf("size: %d\n", event->len);
+                //printf("name: %s\n", event->name);
                 if (event->len) {
-                    std::string path = wd_path[event->wd] + "/" + event->name;
-                    //printf("HERE\n");
                     if (isIgnore(event->name)) {
                         continue;
-                        //return;
                     }
+                    std::string path = wd_path[event->wd] + "/" + event->name;
+
 
                     if (event->mask & IN_CREATE) {
                         //printf("event->name: %s\n", event->name);
-                        new_files.push_back(path);
+
                         //printf("new file: %s\n", path.c_str());
+                        new_files.push_back(path);
                     } else if (event->mask & IN_MODIFY) {
                         modified.push_back(path);
                         //printf("modified: %s\n", path.c_str());
@@ -96,7 +98,7 @@ void FileWatcherLinux::watch()
                         //printf("moved from: %s\n", path.c_str());
                         original_name = path;
                     } else if (event->mask & IN_MOVED_TO) {
-                        printf("moved to: %s\n", path.c_str());
+                        //printf("moved to: %s\n", path.c_str());
                         if (original_name == "") {
                             new_files.push_back(path);
                         } else {
@@ -106,8 +108,6 @@ void FileWatcherLinux::watch()
                         }
                     }
                 }
-                //printf("size: %ld\n", event->len);
-                i += EVENT_SIZE + event->len;
                 //printf("i now: %d\n", i);
             }
         }
