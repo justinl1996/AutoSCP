@@ -35,8 +35,9 @@ private:
     ssh_ptr_t ssh;
     sftp_session sftp;
     int mode;
-
-    mode_t getPermissions(std::string);
+	
+	mode_t getFilePermissions(std::string);
+    mode_t getDirectoryPermissions(std::string);
 };
 
 

@@ -38,7 +38,8 @@ int SCPManager::createDirectory(std::string directory)
 {
 
     int rc;
-	rc = sftp_mkdir(sftp, directory.c_str(), 0x0);//S_IRWXU);
+	mode_t permission = getDirectoryPermissions(directory);
+	rc = sftp_mkdir(sftp, directory.c_str(), permission);//S_IRWXU);
     if (rc != SSH_OK)
     {
         if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
@@ -118,7 +119,7 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     outfile.close();
 #endif
 
-    mode_t permissions = getPermissions(source);
+    mode_t permissions = getFilePermissions(source);
     file = sftp_open(sftp, dest_path.c_str(), access, permissions);
     if (file == NULL) {
         fprintf(stderr, "Cannot open file %s for writing. Error: %s\n", dest_path.c_str(),
@@ -143,14 +144,23 @@ void SCPManager::ping()
     ssh->send_ignore();
 }
 
-mode_t SCPManager::getPermissions(std::string file)
+mode_t SCPManager::getFilePermissions(std::string file)
 {
 #if _WIN32
-	return 0x0;//S_IRWXU;
+	return 0x180; //500
 #else
-    struct stat buf;
-    stat(file.c_str(), &buf);
-    return buf.st_mode;
+	struct stat buf;
+	stat(file.c_str(), &buf);
+	return buf.st_mode;
+#endif
+}
+
+mode_t SCPManager::getDirectoryPermissions(std::string file)
+{
+#if _WIN32
+	return 0x1c0; //700
+#else
+	return getFilePermissions(file);
 #endif
 }
 
