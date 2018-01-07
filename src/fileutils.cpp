@@ -21,10 +21,29 @@ std::string FileUtils::getEndPath(std::string filepath)
 
 std::string FileUtils::getRelativePath(std::string filepath, std::string root)
 {
-    return filepath.substr(root.size() + 1, filepath.length());
+	const int i = 1;
+
+    return filepath.substr(root.length() + i, filepath.length());
+}
+
+std::string FileUtils::toUnixPath(std::string path)
+{
+	do {
+		auto found = path.find("\\");
+		if (found == std::string::npos) {
+			break;
+		}
+		path.replace(found, 1, "/");
+	} while (1);
+	return path;
 }
 
 std::string FileUtils::joinPath(std::string lhs, std::string rhs)
 {
     return (path(lhs) / path(rhs)).make_preferred().string();
+}
+
+std::string  FileUtils::joinPathLinux(std::string lhs, std::string rhs)
+{
+	return lhs == "" ? rhs : lhs + "/" + rhs;
 }
