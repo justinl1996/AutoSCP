@@ -26,10 +26,10 @@ void FileManager::start()
 {
     std::string root = FileUtils::getParentPath(source);
 
-    //auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
+    auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
 
 
-
+    //todo: use semphores instead
     while(true) {
         //std::cout << "NewFile: \n";
         //for (auto file: filewatch->getNewfile()) {
@@ -55,9 +55,22 @@ void FileManager::start()
 
             //fprintf(stderr, "%s\n", sftp_get_error(scp.get));
         }
-        filewatch->clearAll();
+        r_pair_t renamed = filewatch->getRenamed();
+        //std::cout << renamed.first << std::endl;
+        while(renamed.first != "") {
+            std::cout << renamed.first << "->" << renamed.second << std::endl;
+            std::string from = FileUtils::getRelativePath(renamed.first, root);
+            std::string to = FileUtils::getRelativePath(renamed.second, root);
 
+            std::cout << scp->renameFile(from, to) << std::endl;
+            renamed = filewatch->getRenamed();
+        }
+
+
+        filewatch->clearAll();
+        //todo: ping after 1min inactivity + find windows version
         //usleep(500);
+        boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
         scp->ping();
     }
 }
@@ -69,10 +82,10 @@ void FileManager::syncAll()
 
     auto directory_f = [=](std::string dir) {
         std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(dir, root));
-		
 
+
+        std::cout << relative_path << std::endl;
 		scp->createDirectory(FileUtils::joinPathLinux(dest, relative_path));
-		std::cout << dir << std::endl;
         //std::cout << path << std::endl;
     };
 
@@ -80,10 +93,8 @@ void FileManager::syncAll()
         //std::cout << "file: " << getRelativePath(file, root) << std::endl;
 		//server we are pushing to should be unix based
 		std::cout << FileUtils::getRelativePath(file, root) << std::endl;
-		//std::cout << dest << std::endl;
-		std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
-		std::string full_path = FileUtils::joinPathLinux(dest, relative_path);
-		//std::string full_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
+		//std::string full_path = FileUtils::joinPathLinux(dest, relative_path);
+		std::string full_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
 		scp->copyFile(file, full_path);
 
 

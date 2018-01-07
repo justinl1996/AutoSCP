@@ -56,27 +56,17 @@ bool FileWatcher::isIgnore(std::string file)
 std::string FileWatcher::getNewfile()
 {
     //return new_files;
-    //shared.lock();
     if (new_files.empty()) {
-        //shared.unlock();
         return "";
     }
-    //std::string temp = new_files.back();
-    //new_files.pop_back();
-    //shared.unlock();
     return new_files.pop();
 }
 
 std::string FileWatcher::getModified()
 {
-    //shared.lock();
     if (modified.empty()) {
-        //shared.unlock();
         return "";
     }
-    //std::string temp = modified.back();
-    //modified.pop_back();
-    //shared.unlock();
     return modified.pop();
 }
 
@@ -85,8 +75,15 @@ std::string FileWatcher::getDeleted()
     if (deleted.empty()) {
         return "";
     }
-    //std::string temp = deleted.back();
-    //deleted.pop_back();
     return deleted.pop();
+}
+
+r_pair_t FileWatcher::getRenamed()
+{
+    //printf("%ld\n", renamed.size());
+    if (renamed.empty()) {
+        return std::make_pair("","");
+    }
+    return renamed.pop();
 }
 

@@ -33,10 +33,8 @@ SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_s
     }
 }
 
-
 int SCPManager::createDirectory(std::string directory)
 {
-
     int rc;
 	mode_t permission = getDirectoryPermissions(directory);
 	rc = sftp_mkdir(sftp, directory.c_str(), permission);//S_IRWXU);
@@ -82,6 +80,11 @@ int SCPManager::createDirectory(std::string directory)
         return rc;
     }
     return SSH_OK;*/
+}
+
+int SCPManager::renameFile(std::string old_p, std::string new_p)
+{
+    return sftp_rename(sftp, old_p.c_str(), new_p.c_str());
 }
 
 int SCPManager::deleteFile(std::string file)
@@ -160,7 +163,8 @@ mode_t SCPManager::getDirectoryPermissions(std::string file)
 #if _WIN32
 	return 0x1c0; //700
 #else
-	return getFilePermissions(file);
+	//return getFilePermissions(file);
+    return 0x1c0;
 #endif
 }
 

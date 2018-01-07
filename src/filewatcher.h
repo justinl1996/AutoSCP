@@ -13,36 +13,37 @@
 //#include <boost/thread.hpp>
 #include <boost/thread/shared_mutex.hpp>
 
+typedef std::pair<std::string, std::string> r_pair_t;
+
 template <class T>
 class VectorS : public std::vector<T>
 {
 public:
     bool empty() {
-        //shared.lock();
+        shared.lock();
         bool ret = std::vector<T>::empty();
-        //shared.unlock();
+        shared.unlock();
         return ret;
     }
 
     T pop() {
-        //shared.lock();
+        shared.lock();
         T item = std::vector<T>::back();
         std::vector<T>::pop_back();
-        //shared.unlock();
+        shared.unlock();
         return item;
     };
     void push_back(T item) {
-        //shared.lock();
+        shared.lock();
         std::vector<T>::push_back(item);
-        //shared.unlock();
+        shared.unlock();
     };
-
+private:
     boost::shared_mutex shared;
 };
 
 class FileWatcher {
 public:
-    typedef std::pair<std::string, std::string> r_pair_t;
 
     FileWatcher(std::string);
     virtual void watch() = 0;
@@ -63,8 +64,8 @@ protected:
     //std::string root_path;
     VectorS<std::string> modified, deleted, new_files;
     VectorS<r_pair_t> renamed;
-private:
-    //boost::shared_mutex shared;
+//private:
+    //boost::shared_mutex modified_mutex, deleted_mutex, new_mutex, renamed_mutex;
 
 };
 

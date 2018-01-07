@@ -26,6 +26,7 @@ public:
     //void disconnect();
     void ping();
     int createDirectory(std::string);
+    int renameFile(std::string, std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);
 
