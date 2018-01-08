@@ -6,7 +6,9 @@
 #include "filemanager.h"
 #include "filewatcher.h"
 #include "fileutils.h"
-#ifndef _WIN32
+#ifdef _WIN32
+#include "filewatcherwindows.h"
+#else
 #include "filewatcherlinux.h"
 #endif
 
@@ -15,9 +17,10 @@ FileManager::FileManager(std::string _source, std::string _dest, SCPManager::ssh
 {
     //FileWatcher *fw = new FileWatcherLinux(source);
     scp = std::unique_ptr<SCPManager>(new SCPManager(std::move(_ssh), SSH_SCP_WRITE));
-#ifndef _WIN32
-    filewatch = std::unique_ptr<FileWatcher>(new FileWatcherLinux(source));
+#ifdef _WIN32
+	filewatch = std::unique_ptr<FileWatcher>(new FileWatcherWindows(source));
 #else
+    filewatch = std::unique_ptr<FileWatcher>(new FileWatcherLinux(source));
     //todo: add window's implementation here
 #endif
 }
@@ -38,20 +41,23 @@ void FileManager::start()
         std::string file;
         while ((file = filewatch->getNewfile()) != "") {
             std::cout << file << std::endl;
-            scp->copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
+            //todo: avoid nesting these functions
+			scp->copyFile(file, FileUtils::toUnixPath(
+				FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root))));
         }
             //}
 
         //std::cout << "Modified: \n";
         while ((file = filewatch->getModified()) != "") {
             std::cout << file << std::endl;
-            scp->copyFile(file, FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root)));
+            scp->copyFile(file, FileUtils::toUnixPath(
+				FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root))));
         }
         //std::cout << "Deleted: \n";
         while ((file = filewatch->getDeleted()) != "") {
 
             std::cout << file << std::endl;
-            scp->deleteFile(FileUtils::getRelativePath(file, root));
+            scp->deleteFile(FileUtils::toUnixPath(FileUtils::getRelativePath(file, root)));
 
             //fprintf(stderr, "%s\n", sftp_get_error(scp.get));
         }
@@ -59,8 +65,8 @@ void FileManager::start()
         //std::cout << renamed.first << std::endl;
         while(renamed.first != "") {
             std::cout << renamed.first << "->" << renamed.second << std::endl;
-            std::string from = FileUtils::getRelativePath(renamed.first, root);
-            std::string to = FileUtils::getRelativePath(renamed.second, root);
+            std::string from = FileUtils::toUnixPath(FileUtils::getRelativePath(renamed.first, root));
+            std::string to = FileUtils::toUnixPath(FileUtils::getRelativePath(renamed.second, root));
 
             std::cout << scp->renameFile(from, to) << std::endl;
             renamed = filewatch->getRenamed();
