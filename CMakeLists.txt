@@ -10,6 +10,6 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_subdirectory (src)
 
-add_executable(AutoSCP main.cpp src/fileutils.cpp src/fileutils.h)
-target_link_libraries (AutoSCP src ssh ${Boost_LIBRARIES} boost_thread)
+add_executable(AutoSCP main.cpp ${SRC_FILES})
+target_link_libraries (AutoSCP ssh ${Boost_LIBRARIES} boost_thread)
 #LINK_DIRECTORIES()
