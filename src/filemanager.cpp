@@ -28,10 +28,7 @@ FileManager::FileManager(std::string _source, std::string _dest, SCPManager::ssh
 void FileManager::start()
 {
     std::string root = FileUtils::getParentPath(source);
-
     auto thread = boost::thread(std::bind(&FileWatcher::watch, filewatch.get()));
-
-
     //todo: use semphores instead
     while(true) {
         //std::cout << "NewFile: \n";
@@ -89,21 +86,16 @@ void FileManager::syncAll()
     auto directory_f = [=](std::string dir) {
         std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(dir, root));
 
-
         std::cout << relative_path << std::endl;
 		scp->createDirectory(FileUtils::joinPathLinux(dest, relative_path));
-        //std::cout << path << std::endl;
     };
 
     auto file_f = [=](std::string file) {
         //std::cout << "file: " << getRelativePath(file, root) << std::endl;
 		//server we are pushing to should be unix based
-		std::cout << FileUtils::getRelativePath(file, root) << std::endl;
-		//std::string full_path = FileUtils::joinPathLinux(dest, relative_path);
-		std::string full_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
-		scp->copyFile(file, full_path);
-
-
+		std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
+		std::cout << relative_path << std::endl;
+		scp->copyFile(file, relative_path);
     };
 
 

@@ -23,7 +23,6 @@ SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_s
         std::runtime_error("Error allocating SFTP session: " +
                                    std::string(ssh_get_error(session)));
     }
-
     int rc = sftp_init(sftp);
     if (rc != SSH_OK)
     {
@@ -31,6 +30,7 @@ SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_s
                                    std::string(ssh_get_error(sftp)));
         sftp_free(sftp);
     }
+	time_point = Clock::now();
 }
 
 int SCPManager::createDirectory(std::string directory)
@@ -48,6 +48,7 @@ int SCPManager::createDirectory(std::string directory)
             return rc;
         }
     }
+	time_point = Clock::now();
     return SSH_OK;
 
     /*int access_type = O_WRONLY | O_CREAT | O_TRUNC;
@@ -84,6 +85,7 @@ int SCPManager::createDirectory(std::string directory)
 
 int SCPManager::renameFile(std::string old_p, std::string new_p)
 {
+	time_point = Clock::now();
     return sftp_rename(sftp, old_p.c_str(), new_p.c_str());
 }
 
@@ -93,6 +95,7 @@ int SCPManager::deleteFile(std::string file)
     if (rc) {
         fprintf(stderr, "Error deleting file: %s\n", file.c_str());
     }
+	time_point = Clock::now();
     return SSH_OK;
 }
 
@@ -137,6 +140,7 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
         return SSH_ERROR;
     }
     sftp_close(file);
+	time_point = Clock::now();
 
     delete [] buffer;
     return SSH_OK;
@@ -144,7 +148,13 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
 
 void SCPManager::ping()
 {
-    ssh->send_ignore();
+	using namespace std::chrono;
+	//only need to send every 30 seconds
+	if (duration_cast<seconds>(Clock::now() - time_point).count() > 30) {
+		printf("HERE\n");
+		time_point = Clock::now();
+		ssh->send_ignore();
+	}
 }
 
 mode_t SCPManager::getFilePermissions(std::string file)
