@@ -19,12 +19,19 @@ template <class T>
 class VectorS : public std::vector<T>
 {
 public:
+	
     bool empty() {
         shared.lock();
         bool ret = std::vector<T>::empty();
         shared.unlock();
         return ret;
     }
+	T get_last(T def) {
+		if (empty()) {
+			return def;
+		}
+		return pop();
+	}
 
     T pop() {
         shared.lock();
@@ -40,6 +47,7 @@ public:
     };
 private:
     boost::shared_mutex shared;
+	T def;
 };
 
 class FileWatcher {
@@ -53,6 +61,7 @@ public:
     std::string getModified();
     std::string getDeleted();
     std::string getNewfile();
+	std::string getNewDirectories();
     r_pair_t getRenamed();
     template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T> void
         traverse_directory(std::string, FILE_FUNC_T, DIRECTORY_FUNC_T);
@@ -62,11 +71,8 @@ public:
 protected:
     std::string full_path;
     //std::string root_path;
-    VectorS<std::string> modified, deleted, new_files;
+    VectorS<std::string> modified, deleted, new_files, new_directories;
     VectorS<r_pair_t> renamed;
-//private:
-    //boost::shared_mutex modified_mutex, deleted_mutex, new_mutex, renamed_mutex;
-
 };
 
 template<typename FILE_FUNC_T, typename DIRECTORY_FUNC_T>

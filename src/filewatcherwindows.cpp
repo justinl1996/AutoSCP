@@ -71,8 +71,18 @@ void FileWatcherWindows::watch()
 			case FILE_ACTION_ADDED:
 			{
 				//todo: investigate why adding a file also triggers a 2x modified event
+				/*if (PathIsDirectory(temp.c_str())) {
+					printf("DIR HERE\n");
+				}*/
+				DWORD attr = GetFileAttributes(temp.c_str());
+				if (attr == FILE_ATTRIBUTE_DIRECTORY) {
+					new_directories.push_back(temp);
+				}
+				else {
+					new_files.push_back(temp);
+				}
+				//printf("%x\n", attr);
 				printf("added filename: %s\n", temp.c_str());
-				new_files.push_back(temp);
 			}
 
 			break;
@@ -85,7 +95,10 @@ void FileWatcherWindows::watch()
 			case FILE_ACTION_MODIFIED:
 			{
 				printf("modified filename: %s\n", temp.c_str());
-				modified.push_back(temp);
+				DWORD attr = GetFileAttributes(temp.c_str());
+				if (attr != FILE_ATTRIBUTE_DIRECTORY) {
+					modified.push_back(temp);
+				}
 			}
 			break;
 			case FILE_ACTION_RENAMED_OLD_NAME:

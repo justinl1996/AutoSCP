@@ -42,7 +42,7 @@ void FileWatcher::clearAll()
     new_files.clear();
     modified.clear();
     deleted.clear();
-
+	new_directories.clear();
     //std::cout << new_files.size() << std::endl;
 }
 
@@ -55,35 +55,26 @@ bool FileWatcher::isIgnore(std::string file)
 
 std::string FileWatcher::getNewfile()
 {
-    //return new_files;
-    if (new_files.empty()) {
-        return "";
-    }
-    return new_files.pop();
+	return new_files.get_last("");
+}
+
+std::string FileWatcher::getNewDirectories()
+{
+	return new_directories.get_last("");
 }
 
 std::string FileWatcher::getModified()
 {
-    if (modified.empty()) {
-        return "";
-    }
-    return modified.pop();
+	return modified.get_last("");
 }
 
 std::string FileWatcher::getDeleted()
 {
-    if (deleted.empty()) {
-        return "";
-    }
-    return deleted.pop();
+	return deleted.get_last("");
 }
 
 r_pair_t FileWatcher::getRenamed()
 {
-    //printf("%ld\n", renamed.size());
-    if (renamed.empty()) {
-        return std::make_pair("","");
-    }
-    return renamed.pop();
+	return renamed.get_last(std::make_pair(std::string(""), std::string("")));
 }
 

@@ -37,23 +37,30 @@ void FileManager::start()
 
         std::string file;
         while ((file = filewatch->getNewfile()) != "") {
-            std::cout << file << std::endl;
+            //std::cout << file << std::endl;
             //todo: avoid nesting these functions
+			//printf("ASSADS\n");
 			scp->copyFile(file, FileUtils::toUnixPath(
 				FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root))));
         }
+
+		while ((file = filewatch->getNewDirectories()) != "") {
+			//std::cout << file << std::endl;
+			scp->createDirectory(FileUtils::toUnixPath(
+				FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root))));
+		}
             //}
 
         //std::cout << "Modified: \n";
         while ((file = filewatch->getModified()) != "") {
-            std::cout << file << std::endl;
+            //std::cout << file << std::endl;
             scp->copyFile(file, FileUtils::toUnixPath(
 				FileUtils::joinPath(dest, FileUtils::getRelativePath(file, root))));
         }
         //std::cout << "Deleted: \n";
         while ((file = filewatch->getDeleted()) != "") {
 
-            std::cout << file << std::endl;
+            //std::cout << file << std::endl;
             scp->deleteFile(FileUtils::toUnixPath(FileUtils::getRelativePath(file, root)));
 
             //fprintf(stderr, "%s\n", sftp_get_error(scp.get));
@@ -61,7 +68,7 @@ void FileManager::start()
         r_pair_t renamed = filewatch->getRenamed();
         //std::cout << renamed.first << std::endl;
         while(renamed.first != "") {
-            std::cout << renamed.first << "->" << renamed.second << std::endl;
+            //std::cout << renamed.first << "->" << renamed.second << std::endl;
             std::string from = FileUtils::toUnixPath(FileUtils::getRelativePath(renamed.first, root));
             std::string to = FileUtils::toUnixPath(FileUtils::getRelativePath(renamed.second, root));
 

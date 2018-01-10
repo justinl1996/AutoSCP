@@ -151,7 +151,7 @@ void SCPManager::ping()
 	using namespace std::chrono;
 	//only need to send every 30 seconds
 	if (duration_cast<seconds>(Clock::now() - time_point).count() > 30) {
-		printf("HERE\n");
+		//printf("HERE\n");
 		time_point = Clock::now();
 		ssh->send_ignore();
 	}
