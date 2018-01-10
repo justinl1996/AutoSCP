@@ -35,9 +35,10 @@ public:
 private:
     //ssh_scp scp;
     //ssh_session session;
+
+    int mode;
     ssh_ptr_t ssh;
     sftp_session sftp;
-    int mode;
 	std::chrono::time_point<Clock> time_point;
 
 	mode_t getFilePermissions(std::string);

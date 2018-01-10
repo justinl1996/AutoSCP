@@ -13,6 +13,7 @@
 #include <sys/inotify.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 static const int EVENT_SIZE =  ( sizeof (struct inotify_event) );
 static const int BUF_LEN = ( 1024 * ( EVENT_SIZE + 9 ) );
@@ -32,14 +33,17 @@ FileWatcherLinux::FileWatcherLinux(std::string directory) :
     auto directory_process = [&](std::string path) {directories.push_back(path);};
     traverse_directory(directory, file_process, directory_process);
     for (std::string path: directories) {
-        //std::cout << path << std::endl;
-        int wd = inotify_add_watch(fd, path.c_str(),
-                                   IN_MODIFY | IN_CREATE | IN_DELETE
-                                   | IN_MOVED_FROM | IN_MOVED_TO);
-        wd_path[wd] = path;
+        addPath(path);
     }
 }
 
+void FileWatcherLinux::addPath(std::string path)
+{
+    int wd = inotify_add_watch(fd, path.c_str(),
+                               IN_MODIFY | IN_CREATE | IN_DELETE
+                               | IN_MOVED_FROM | IN_MOVED_TO);
+    wd_path[wd] = path;
+}
 
 void FileWatcherLinux::watch()
 {
@@ -62,7 +66,7 @@ void FileWatcherLinux::watch()
         if (ret < 0) {
             perror("select");
         } else if (!ret) {
-            printf("Nothing for 3s\n");
+            //printf("Nothing for 3s\n");
 
         } else {
             length = read(fd, buffer, BUF_LEN);
@@ -82,23 +86,25 @@ void FileWatcherLinux::watch()
                     }
                     std::string path = wd_path[event->wd] + "/" + event->name;
 
-
                     if (event->mask & IN_CREATE) {
-                        //printf("event->name: %s\n", event->name);
-
-                        //printf("new file: %s\n", path.c_str());
-                        new_files.push_back(path);
+                        printf("new file: %s\n", path.c_str());
+                        if (isDir(path)) {
+                            new_directories.push_back(path);
+                            addPath(path);
+                        } else {
+                            new_files.push_back(path);
+                        }
                     } else if (event->mask & IN_MODIFY) {
                         modified.push_back(path);
-                        //printf("modified: %s\n", path.c_str());
+                        printf("modified: %s\n", path.c_str());
                     } else if (event->mask & IN_DELETE) {
                         deleted.push_back(path);
-                        //printf("deleted: %s\n", path.c_str());
+                        printf("deleted: %s\n", path.c_str());
                     } else if (event->mask & IN_MOVED_FROM) {
-                        //printf("moved from: %s\n", path.c_str());
+                        printf("moved from: %s\n", path.c_str());
                         original_name = path;
                     } else if (event->mask & IN_MOVED_TO) {
-                        //printf("moved to: %s\n", path.c_str());
+                        printf("moved to: %s\n", path.c_str());
                         if (original_name == "") {
                             new_files.push_back(path);
                         } else {
@@ -108,7 +114,6 @@ void FileWatcherLinux::watch()
                         }
                     }
                 }
-                //printf("i now: %d\n", i);
             }
         }
    }
@@ -151,6 +156,14 @@ void FileWatcherLinux::watch()
 
     return directories;
 }*/
+
+bool FileWatcherLinux::isDir(std::string path)
+{
+    struct stat buf;
+    stat(path.c_str(), &buf);
+    return S_ISDIR(buf.st_mode);
+
+}
 
 void FileWatcherLinux::stop()
 {

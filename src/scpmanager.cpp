@@ -42,7 +42,7 @@ int SCPManager::createDirectory(std::string directory)
     {
         if (sftp_get_error(sftp) != SSH_FX_FILE_ALREADY_EXISTS)
         {
-            fprintf(stderr, "Can't create directory %s\n", directory.c_str(),
+            fprintf(stderr, "Can't create directory %s, %s\n", directory.c_str(),
                     ssh_get_error(ssh->get_session()));
                     //ssh_get_error(session));
             return rc;
@@ -115,8 +115,9 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     infile.seekg (0, infile.beg);
 
     //printf("length %d\n", length);
-    char *buffer = new char[length];
-    infile.read(buffer, length);
+    //char *buffer = new char[length];
+    std::vector<char> buffer(length);
+    infile.read(&buffer[0], length);
     infile.close();
 
 #if 0
@@ -130,11 +131,10 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     if (file == NULL) {
         fprintf(stderr, "Cannot open file %s for writing. Error: %s\n", dest_path.c_str(),
                 ssh_get_error(ssh->get_session()));
-
         return SSH_ERROR;
     }
 
-    int nwritten = sftp_write(file, buffer, length);
+    int nwritten = sftp_write(file, &buffer[0], length);
     if (nwritten != length) {
         fprintf(stderr, "Cannot write data to file %s", source.c_str());
         return SSH_ERROR;
@@ -142,7 +142,6 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     sftp_close(file);
 	time_point = Clock::now();
 
-    delete [] buffer;
     return SSH_OK;
 }
 

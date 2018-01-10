@@ -17,9 +17,7 @@ SSHManager::SSHManager(std::string _host) : host(_host)
     if (session == NULL) {
         throw std::runtime_error("Error Initializing SSH session\n");
     }
-    const long timeout = 3600;
     ssh_options_set(session, SSH_OPTIONS_HOST, host.c_str());
-    ssh_options_set(session, SSH_OPTIONS_TIMEOUT, "3600");
 }
 
 SSHManager::SSHManager(std::string _host, SSH_OPTION_T options):

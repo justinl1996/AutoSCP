@@ -50,7 +50,7 @@ void FileWatcher::clearAll()
 bool FileWatcher::isIgnore(std::string file)
 {
     //just ignore hidden files for now
-    return file.at(0) == '.' ? true : false;
+    return file.at(0) == '.' || *(file.end() - 1) == '~' ? true : false;
 }
 
 std::string FileWatcher::getNewfile()

@@ -18,7 +18,8 @@ public:
 
 private:
     typedef std::map<int, std::string> dir_map_t;
-
+    bool isDir(std::string );
+    void addPath(std::string );
     int fd;
     dir_map_t wd_path;
     //std::vector<std::string> get_all_directories(std::string);
