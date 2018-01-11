@@ -102,7 +102,13 @@ void FileManager::syncAll()
 		//server we are pushing to should be unix based
 		std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
 		std::cout << relative_path << std::endl;
-		scp->copyFile(file, relative_path);
+
+        if (scp->getLastModified(relative_path) < FileUtils::getLastModified(file)) {
+            scp->copyFile(file, relative_path);
+        }
+        //scp->copyFile(file, relative_path);
+        //scp->getFileAttributes(relative_path);
+
     };
 
 

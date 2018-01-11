@@ -31,6 +31,7 @@ public:
     int renameFile(std::string, std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);
+    std::time_t getLastModified(std::string);
 
 private:
     //ssh_scp scp;
@@ -41,8 +42,7 @@ private:
     sftp_session sftp;
 	std::chrono::time_point<Clock> time_point;
 
-	mode_t getFilePermissions(std::string);
-    mode_t getDirectoryPermissions(std::string);
+
 };
 
 

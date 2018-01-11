@@ -6,6 +6,7 @@
 #define AUTOSCP_FILEUTILS_H
 
 #include <string>
+#include <sys/stat.h>
 
 struct FileUtils
 {
@@ -15,6 +16,13 @@ struct FileUtils
 	static std::string toUnixPath(std::string);
     static std::string joinPath(std::string lhs, std::string rhs);
 	static std::string joinPathLinux(std::string lhs, std::string rhs);
+    static mode_t getFilePermissions(std::string);
+    static mode_t getDirectoryPermissions(std::string);
+
+#ifndef _WIN32
+	static struct stat getFileStat(std::string);
+    static time_t getLastModified(std::string);
+#endif
 };
 
 

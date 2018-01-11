@@ -47,3 +47,40 @@ std::string  FileUtils::joinPathLinux(std::string lhs, std::string rhs)
 {
 	return lhs == "" ? rhs : lhs + "/" + rhs;
 }
+
+#ifndef _WIN32
+struct stat FileUtils::getFileStat(std::string path)
+{
+    struct stat buf;
+    stat(path.c_str(), &buf);
+    return buf;
+}
+
+std::time_t FileUtils::getLastModified(std::string file)
+{
+   return FileUtils::getFileStat(file).st_mtim.tv_sec;
+}
+
+
+#endif
+
+
+
+mode_t FileUtils::getFilePermissions(std::string file)
+{
+#if _WIN32
+	return 0x180; //500
+#else
+    FileUtils::getFileStat(file).st_mode;
+#endif
+}
+
+mode_t FileUtils::getDirectoryPermissions(std::string file)
+{
+#if _WIN32
+	return 0x1c0; //700
+#else
+	//return getFilePermissions(file);
+    return 0x1c0;
+#endif
+}

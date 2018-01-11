@@ -9,9 +9,12 @@
 #include <string.h>
 #include <fstream>
 #include <fcntl.h>
+#include <time.h>
 #include <vector>
 //#include <bits/ios_base.h>
 #include "scpmanager.h"
+#include "fileutils.h"
+
 
 
 SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_ssh))
@@ -36,7 +39,7 @@ SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_s
 int SCPManager::createDirectory(std::string directory)
 {
     int rc;
-	mode_t permission = getDirectoryPermissions(directory);
+	mode_t permission = FileUtils::getDirectoryPermissions(directory);
 	rc = sftp_mkdir(sftp, directory.c_str(), permission);//S_IRWXU);
     if (rc != SSH_OK)
     {
@@ -126,7 +129,7 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     outfile.close();
 #endif
 
-    mode_t permissions = getFilePermissions(source);
+    mode_t permissions = FileUtils::getFilePermissions(source);
     file = sftp_open(sftp, dest_path.c_str(), access, permissions);
     if (file == NULL) {
         fprintf(stderr, "Cannot open file %s for writing. Error: %s\n", dest_path.c_str(),
@@ -145,6 +148,25 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     return SSH_OK;
 }
 
+std::time_t SCPManager::getLastModified(std::string path)
+{
+    sftp_attributes attr = sftp_lstat(sftp, path.c_str());
+    if (attr == NULL) {
+        return 0;
+    }
+
+    //std::cout << attr->createtime << std::endl;
+    //std::cout << attr->mtime << std::endl;
+    //std::cout << attr->atime << std::endl;
+    return attr->mtime;
+
+   /* struct tm *tm = localtime(&(time));
+    std::cout << asctime(tm) << std::endl;
+
+    //std::cout << attr->name << std::endl;
+    return tm;*/
+}
+
 void SCPManager::ping()
 {
 	using namespace std::chrono;
@@ -156,26 +178,6 @@ void SCPManager::ping()
 	}
 }
 
-mode_t SCPManager::getFilePermissions(std::string file)
-{
-#if _WIN32
-	return 0x180; //500
-#else
-	struct stat buf;
-	stat(file.c_str(), &buf);
-	return buf.st_mode;
-#endif
-}
-
-mode_t SCPManager::getDirectoryPermissions(std::string file)
-{
-#if _WIN32
-	return 0x1c0; //700
-#else
-	//return getFilePermissions(file);
-    return 0x1c0;
-#endif
-}
 
 SCPManager::~SCPManager()
 {
