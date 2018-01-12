@@ -10,7 +10,7 @@ SET(SRC_FILES fileutils.cpp fileutils.h filewatcher.cpp
         sshmanager.cpp sshmanager.h scpmanager.cpp scpmanager.h
         filemanager.cpp filemanager.h)
 IF(WIN32)
-
+LIST(APPEND SRC_FILES filewatcherwindows.cpp filewatcherwindows.h)
 ELSE()
 LIST(APPEND SRC_FILES filewatcherlinux.cpp filewatcherlinux.h)
 ENDIF()
