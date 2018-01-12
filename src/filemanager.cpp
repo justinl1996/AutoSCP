@@ -93,7 +93,7 @@ void FileManager::syncAll()
     auto directory_f = [=](std::string dir) {
         std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(dir, root));
 
-        std::cout << relative_path << std::endl;
+        //std::cout << relative_path << std::endl;
 		scp->createDirectory(FileUtils::joinPathLinux(dest, relative_path));
     };
 
@@ -101,9 +101,12 @@ void FileManager::syncAll()
         //std::cout << "file: " << getRelativePath(file, root) << std::endl;
 		//server we are pushing to should be unix based
 		std::string relative_path = FileUtils::toUnixPath(FileUtils::getRelativePath(file, root));
-		std::cout << relative_path << std::endl;
+		//std::cout << relative_path << std::endl;
 
         if (scp->getLastModified(relative_path) < FileUtils::getLastModified(file)) {
+		//scp->getLastModified(relative_path);
+			std::cout << relative_path << std::endl;
+
             scp->copyFile(file, relative_path);
         }
         //scp->copyFile(file, relative_path);

@@ -7,6 +7,8 @@
 
 #include <string>
 #include <sys/stat.h>
+#include <fcntl.h>
+#include <libssh/libssh.h>
 
 struct FileUtils
 {
@@ -18,10 +20,12 @@ struct FileUtils
 	static std::string joinPathLinux(std::string lhs, std::string rhs);
     static mode_t getFilePermissions(std::string);
     static mode_t getDirectoryPermissions(std::string);
+	static time_t getLastModified(std::string);
 
 #ifndef _WIN32
 	static struct stat getFileStat(std::string);
-    static time_t getLastModified(std::string);
+    #else
+	static unsigned WindowsTickToUnixSeconds(long long windowsTicks);
 #endif
 };
 

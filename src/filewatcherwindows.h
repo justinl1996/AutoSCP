@@ -1,6 +1,8 @@
 #ifndef AUTOSCP_FILEWATCHERWINDOWS_H
 #define AUTOSCP_FILEWATCHERWINDOWS_H
 
+#include <WinSock2.h>
+#include <WS2tcpip.h>
 #include <Windows.h>
 
 #include "filewatcher.h"

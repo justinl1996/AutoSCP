@@ -7,6 +7,7 @@
 
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
+#include <time.h>
 #include <iostream>
 #include <memory>
 #include <chrono>
@@ -31,7 +32,7 @@ public:
     int renameFile(std::string, std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);
-    std::time_t getLastModified(std::string);
+    time_t getLastModified(std::string);
 
 private:
     //ssh_scp scp;
@@ -41,8 +42,6 @@ private:
     ssh_ptr_t ssh;
     sftp_session sftp;
 	std::chrono::time_point<Clock> time_point;
-
-
 };
 
 

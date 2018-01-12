@@ -1,5 +1,4 @@
 
-#include <Windows.h>
 #include <stdlib.h>
 #include <string>
 
@@ -8,13 +7,14 @@
 
 std::string wcharToString(LPCWSTR p, size_t len)
 {
-	char *temp = new char[len + 1];
+	//char *temp = new char[len + 1];
+	std::vector<char> temp(len + 1);
 
 	WideCharToMultiByte(CP_UTF8, 0, p, len-1, &temp[0], len-1, NULL, NULL);
 	temp[len] = '\0';
 
-	std::string ret(temp, len - 1);
-	delete temp;
+	std::string ret(&temp[0], len - 1);
+	//delete temp;
 	return ret;
 }
 

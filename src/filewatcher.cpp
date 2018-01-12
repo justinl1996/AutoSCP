@@ -7,8 +7,6 @@
 #include "filewatcher.h"
 
 
-
-
 FileWatcher::FileWatcher(std::string _path) : full_path(_path)
 {
     //using namespace boost::filesystem;

@@ -2,7 +2,6 @@
 // Created by justin on 28/12/17.
 //
 
-#include <libssh/libssh.h>
 #include <stdexcept>
 #include <iostream>
 #include <sstream>
@@ -119,7 +118,10 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
 
     //printf("length %d\n", length);
     //char *buffer = new char[length];
-    std::vector<char> buffer(length);
+    std::vector<char> buffer;
+	buffer.resize(length + 1);
+	//printf("length: %d\n", length);
+	//printf("size: %d\n", buffer.size());
     infile.read(&buffer[0], length);
     infile.close();
 
@@ -144,11 +146,10 @@ int SCPManager::copyFile(std::string source, std::string dest_path)
     }
     sftp_close(file);
 	time_point = Clock::now();
-
     return SSH_OK;
 }
 
-std::time_t SCPManager::getLastModified(std::string path)
+time_t SCPManager::getLastModified(std::string path)
 {
     sftp_attributes attr = sftp_lstat(sftp, path.c_str());
     if (attr == NULL) {
@@ -160,7 +161,7 @@ std::time_t SCPManager::getLastModified(std::string path)
     //std::cout << attr->atime << std::endl;
     return attr->mtime;
 
-   /* struct tm *tm = localtime(&(time));
+    /*struct tm *tm = localtime(&(time));
     std::cout << asctime(tm) << std::endl;
 
     //std::cout << attr->name << std::endl;

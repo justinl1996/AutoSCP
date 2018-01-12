@@ -4,6 +4,7 @@
 
 #include "fileutils.h"
 #include <boost/filesystem.hpp>
+#include <sys/stat.h>
 
 using namespace boost::filesystem;
 
@@ -56,15 +57,41 @@ struct stat FileUtils::getFileStat(std::string path)
     return buf;
 }
 
-std::time_t FileUtils::getLastModified(std::string file)
+
+#else
+#define WINDOWS_TICK 10000000
+#define SEC_TO_UNIX_EPOCH 11644473600LL
+
+unsigned FileUtils::WindowsTickToUnixSeconds(long long windowsTicks)
 {
-   return FileUtils::getFileStat(file).st_mtim.tv_sec;
+	return (unsigned)(windowsTicks / WINDOWS_TICK - SEC_TO_UNIX_EPOCH);
 }
-
-
 #endif
 
+time_t FileUtils::getLastModified(std::string file)
+{
+#ifdef _WIN32
+	FILETIME ft;
+	HANDLE fp = CreateFile(file.c_str(),
+		GENERIC_READ,
+		FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+		NULL, // security descriptor
+		OPEN_EXISTING,
+		FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
+		NULL);
 
+	GetFileTime(fp, NULL, NULL, &ft);
+
+	LARGE_INTEGER li;
+	li.LowPart = ft.dwLowDateTime;
+	li.HighPart = ft.dwHighDateTime;
+	time_t unix_time = FileUtils::WindowsTickToUnixSeconds(li.QuadPart);
+	CloseHandle(fp);
+	return unix_time;
+#else
+   return FileUtils::getFileStat(file).st_mtim.tv_sec;
+#endif
+}
 
 mode_t FileUtils::getFilePermissions(std::string file)
 {
