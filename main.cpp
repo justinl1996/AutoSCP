@@ -29,46 +29,6 @@
 #include <Windows.h>
 #include "filewatcherwindows.h"
 
-
-struct Settings {
-	std::string user;
-	std::string host;
-	std::string localdir;
-	std::string remotedir;
-};
-
-std::unique_ptr<Settings> init(std::string ini)
-{
-	INIReader reader(ini);
-	if (reader.ParseError() < 0) {
-		std::cout << "Can't load " << ini << std::endl;
-		return NULL;
-	}
-	
-	const std::string def_str = "UNKNOWN";
-	auto s = std::make_unique<Settings>();
-	
-	s->user = reader.Get("General", "user", def_str);
-	s->host = reader.Get("General", "host", def_str);
-	s->localdir = reader.Get("General", "localdir", def_str);
-	s->remotedir = reader.Get("General", "remotedir", def_str);
-	
-	if (s->user == def_str || s->localdir == def_str || s->host == def_str
-		|| s->remotedir == def_str) {
-		std::cout << "corrupted " << ini << std::endl;
-		return NULL;
-	}
-
-	using namespace boost::filesystem;
-	if (!exists(path(s->localdir))) {
-		std::cout << "No such directory exists: " << s->localdir << std::endl;
-		return NULL;
-	}
-
-	return s;
-}
-
-
 std::string getpass(const char *prompt, bool show_asterisk = true)
 {
 	const char BACKSPACE = 8;
@@ -110,6 +70,44 @@ std::string getpass(const char *prompt, bool show_asterisk = true)
 }
 
 #endif
+
+struct Settings {
+	std::string user;
+	std::string host;
+	std::string localdir;
+	std::string remotedir;
+};
+
+std::unique_ptr<Settings> init(std::string ini)
+{
+	INIReader reader(ini);
+	if (reader.ParseError() < 0) {
+		std::cout << "Can't load " << ini << std::endl;
+		return NULL;
+	}
+
+	const std::string def_str = "UNKNOWN";
+	auto s = std::make_unique<Settings>();
+
+	s->user = reader.Get("General", "user", def_str);
+	s->host = reader.Get("General", "host", def_str);
+	s->localdir = reader.Get("General", "localdir", def_str);
+	s->remotedir = reader.Get("General", "remotedir", def_str);
+
+	if (s->user == def_str || s->localdir == def_str || s->host == def_str
+		|| s->remotedir == def_str) {
+		std::cout << "corrupted " << ini << std::endl;
+		return NULL;
+	}
+
+	using namespace boost::filesystem;
+	if (!exists(path(s->localdir))) {
+		std::cout << "No such directory exists: " << s->localdir << std::endl;
+		return NULL;
+	}
+
+	return s;
+}
 
 int main(int argc, char **argv )
 {

@@ -110,7 +110,7 @@ void FileManager::syncAll()
 		//std::cout << relative_path << std::endl;
 		//std::cout << scp->getLastModified(relative_path) << " : " << FileUtils::getLastModified(file) << std::endl;
         if (scp->getLastModified(relative_path) < FileUtils::getLastModified(file)) {
-			std::cout << relative_path << std::endl;
+			std::cout << file << std::endl;
             scp->copyFile(file, relative_path);
         }
         //scp->copyFile(file, relative_path);
