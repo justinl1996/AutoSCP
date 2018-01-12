@@ -56,8 +56,6 @@ struct stat FileUtils::getFileStat(std::string path)
     stat(path.c_str(), &buf);
     return buf;
 }
-
-
 #else
 #define WINDOWS_TICK 10000000
 #define SEC_TO_UNIX_EPOCH 11644473600LL
@@ -98,7 +96,7 @@ mode_t FileUtils::getFilePermissions(std::string file)
 #if _WIN32
 	return 0x180; //500
 #else
-    FileUtils::getFileStat(file).st_mode;
+    return FileUtils::getFileStat(file).st_mode;
 #endif
 }
 
