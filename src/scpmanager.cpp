@@ -35,6 +35,13 @@ SCPManager::SCPManager(ssh_ptr_t _ssh, int _mode): mode(_mode), ssh(std::move(_s
 	time_point = Clock::now();
 }
 
+bool SCPManager::directoryExists(std::string path)
+{
+	sftp_dir handle = sftp_opendir(sftp, path.c_str());
+	return handle == NULL ? false : true;
+}
+
+
 int SCPManager::createDirectory(std::string directory)
 {
     int rc;

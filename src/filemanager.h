@@ -16,7 +16,8 @@ class FileManager
 public:
     FileManager(std::string, std::string, SCPManager::ssh_ptr_t ssh);
     //~FileManager() {std::cout << "IN DESTRUCTOR\n";};
-    void start();
+	bool checkRemoteDir() { return scp->directoryExists(dest); };
+	void start();
     void syncAll();
 
 private:

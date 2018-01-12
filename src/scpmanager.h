@@ -32,6 +32,7 @@ public:
     int renameFile(std::string, std::string);
     int copyFile(std::string, std::string);
     int deleteFile(std::string);
+	bool directoryExists(std::string);
     time_t getLastModified(std::string);
 
 private:
