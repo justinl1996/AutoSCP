@@ -18,7 +18,7 @@ public:
     //~FileManager() {std::cout << "IN DESTRUCTOR\n";};
 	bool checkRemoteDir() { return scp->directoryExists(dest); };
 	void start();
-    void syncAll();
+    void syncAll(bool);
 
 private:
 

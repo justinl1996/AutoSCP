@@ -6,6 +6,7 @@
 #include <libssh/libssh.h>
 #include <string.h>
 #include <boost/date_time.hpp>
+#include <boost/program_options.hpp>
 
 #include "fileutils.h"
 #include "sshmanager.h"
@@ -15,9 +16,6 @@
 #include "filewatcherlinux.h"
 #include "inih/INIReader.h"
 
-
-#define PI_HOST "192.168.200.2"
-#define PI_USER "pi"
 
 #define MOSS_HOST "moss.labs.eait.uq.edu.au"
 #define MOSS_USER "s4371057"
@@ -68,8 +66,9 @@ std::string getpass(const char *prompt, bool show_asterisk = true)
 	std::cout << std::endl;
 	return password;
 }
-
 #endif
+
+namespace po = boost::program_options;
 
 struct Settings {
 	std::string user;
@@ -109,7 +108,15 @@ std::unique_ptr<Settings> init(std::string ini)
 	return s;
 }
 
-int main(int argc, char **argv )
+mode_t test()
+{
+    struct stat buf;
+    stat("/home/justin/test/toucan1.csv", &buf);
+    return buf.st_mode;
+}
+
+
+int main(int argc, const char **argv )
 {
 #if 0
     FileWatcherLinux filewatch("/home/justin/test");
@@ -123,9 +130,26 @@ int main(int argc, char **argv )
 	if (settings == NULL) {
 		exit(1);
 	};
-	//std::cout << "host: " << settings->host << std::endl;
-	//std::cout << "user: " << settings->user << std::endl;
 
+	bool toSync, gui;
+	po::options_description desc("Program options");
+	desc.add_options()
+            ("help", "Print help")
+            ("sync,s", po::value<bool>(&toSync)->default_value(false), "to perform a synchronisation")
+            ("gui,g", po::value<bool>(&gui)->default_value(false), "run GUI version")
+            ;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, desc), vm);
+	po::notify(vm);
+	if (vm.count("help")) {
+        std::cout << desc << std::endl;
+    }
+
+
+    //std::cout << "host: " << settings->host << std::endl;
+	//std::cout << "user: " << settings->user << std::endl;
+#if 1
     SSH_OPTION_T options;
     options[SSH_OPTIONS_USER] = (settings->user).c_str();
     auto ssh = std::unique_ptr<SSHManager>(new SSHManager(settings->host, options));
@@ -152,11 +176,13 @@ int main(int argc, char **argv )
 		std::cout << "Remote Directory " << settings->remotedir << " does not exists\n";
 		exit(1);
 	}
-    manager.syncAll();
+
+	manager.syncAll(toSync);
 	std::cout << "STARTING...." << std::endl;
     manager.start();
 #endif
-#if 1
+#endif
+#if 0
 	//boost::posix_time::ptime timeLocal =
 	//	boost::posix_time::second_clock::local_time();
 	//std::cout << "Current System Time = " << timeLocal << std::endl;
@@ -176,16 +202,10 @@ int main(int argc, char **argv )
 	*/
 #endif
 #if 0
-	(void)argc; (void)argv;
-	fswatcher_t watcher = fswatcher_create(FSWATCHER_CREATE_DEFAULT, FSWATCHER_EVENT_ALL, "c:\\users\\justin\\Documents\\nothing", 0x0);
-
-	while (true)
-	{
-		fswatcher_event_handler handler = { watch_event_handler };
-		fswatcher_poll(watcher, &handler, 0x0);
-	};
-
-	fswatcher_destroy(watcher);
+    /*struct stat buf;
+    stat("/home/justin/test/toucan1.csv", &buf);
+    mode_t mode = buf.st_mode;*/
+	printf("%o\n", test());
 #endif
 #if 0
 	auto filewatch = std::unique_ptr<FileWatcher>(

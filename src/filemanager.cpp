@@ -88,7 +88,7 @@ void FileManager::start()
     }
 }
 
-void FileManager::syncAll()
+void FileManager::syncAll(bool all)
 {
     std::string root = FileUtils::getParentPath(source);
 	
@@ -109,18 +109,14 @@ void FileManager::syncAll()
 
 		//std::cout << relative_path << std::endl;
 		//std::cout << scp->getLastModified(relative_path) << " : " << FileUtils::getLastModified(file) << std::endl;
-        if (scp->getLastModified(relative_path) < FileUtils::getLastModified(file)) {
+
+        if (all || scp->getLastModified(relative_path) < FileUtils::getLastModified(file)) {
 			std::cout << file << std::endl;
             scp->copyFile(file, relative_path);
         }
-        //scp->copyFile(file, relative_path);
-        //scp->getFileAttributes(relative_path);
-
     };
 
 
     //scp.copyFile("/home/justin/fp.cfg", "test/fp.cfg");//"/home/justin/fp.cfg.bak");
     filewatch->traverse_directory(source, file_f, directory_f);
-    //scp.deleteFile("test/fp.cfg");
-    //scp.create_directory("yellow");
 }
