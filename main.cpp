@@ -68,6 +68,7 @@ std::string getpass(const char *prompt, bool show_asterisk = true)
 }
 #endif
 
+
 namespace po = boost::program_options;
 
 struct Settings {
@@ -108,14 +109,29 @@ std::unique_ptr<Settings> init(std::string ini)
 	return s;
 }
 
-mode_t test()
+#include <wx/wxprec.h>
+#ifndef WX_PRECOMP
+#include <wx/wx.h>
+#endif
+
+class MyApp: public wxApp
 {
-    struct stat buf;
-    stat("/home/justin/test/toucan1.csv", &buf);
-    return buf.st_mode;
+public:
+	virtual bool OnInit();
+};
+
+wxIMPLEMENT_APP(MyApp);
+
+bool MyApp::OnInit()
+{
+    //MyFrame *frame = new MyFrame( "Hello World", wxPoint(50, 50), wxSize(450, 340) );
+    //frame->Show( true );
+    return true;
 }
 
 
+
+#if 0
 int main(int argc, const char **argv )
 {
 #if 0
@@ -218,4 +234,4 @@ int main(int argc, const char **argv )
     return 0;
 }
 
-
+#endif;
