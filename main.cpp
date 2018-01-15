@@ -122,17 +122,85 @@ public:
 
 wxIMPLEMENT_APP(MyApp);
 
+//int main1(int argc, char **argv);
+
+
+void launch_gui()
+{
+
+}
+
 bool MyApp::OnInit()
 {
     //MyFrame *frame = new MyFrame( "Hello World", wxPoint(50, 50), wxSize(450, 340) );
     //frame->Show( true );
-    return true;
+    char **argv1 = argv;
+
+	auto settings = init("AutoSCP.ini");
+	if (settings == NULL) {
+		exit(1);
+	};
+
+	bool toSync, gui;
+	po::options_description desc("Program options");
+	desc.add_options()
+			("help", "Print help")
+			("sync,s", po::value<bool>(&toSync)->default_value(false), "to perform a synchronisation")
+			("gui,g", po::value<bool>(&gui)->default_value(false), "run GUI version")
+			;
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, (const char **) argv1, desc), vm);
+	po::notify(vm);
+	if (vm.count("help")) {
+		std::cout << desc << std::endl;
+	}
+	if (gui) {
+		std::cout << "running GUI....." << std::endl;
+		launch_gui();
+		return true;
+	}
+
+
+
+	SSH_OPTION_T options;
+	options[SSH_OPTIONS_USER] = (settings->user).c_str();
+	auto ssh = std::unique_ptr<SSHManager>(new SSHManager(settings->host, options));
+	//SSHManager ssh( , options);
+
+	bool ret;
+	ret = ssh->connect();
+	if (!ret) {
+		//std::cout << "Error Connecting\n";
+		exit(1);
+	}
+
+	std::string password = getpass("password: ");
+
+	ret = ssh->authenticate(password);
+	if (!ret) {
+		//std::cout << "Error Authenticating\n";
+		exit(1);
+	}
+	std::cout << "SUCCESS\n";
+	std::cout << "SYNCING...\n";
+	FileManager manager(settings->localdir, settings->remotedir, std::move(ssh));
+	if (!manager.checkRemoteDir()) {
+		std::cout << "Remote Directory " << settings->remotedir << " does not exists\n";
+		exit(1);
+	}
+
+	manager.syncAll(toSync);
+	std::cout << "STARTING...." << std::endl;
+	manager.start();
+
+    return false;
 }
 
 
 
 #if 0
-int main(int argc, const char **argv )
+int main1(int argc, char **argv )
 {
 #if 0
     FileWatcherLinux filewatch("/home/justin/test");
@@ -234,4 +302,4 @@ int main(int argc, const char **argv )
     return 0;
 }
 
-#endif;
+#endif

@@ -163,9 +163,6 @@ time_t SCPManager::getLastModified(std::string path)
         return 0;
     }
 
-    //std::cout << attr->createtime << std::endl;
-    //std::cout << attr->mtime << std::endl;
-    //std::cout << attr->atime << std::endl;
     return attr->mtime;
 
     /*struct tm *tm = localtime(&(time));
