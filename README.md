@@ -7,4 +7,4 @@ Works on Linux on Windows.
 cd into directory and run cmake
 
 # Prerequistes
-libssh
+libssh, boost, cmake 3.5+
