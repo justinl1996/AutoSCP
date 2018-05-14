@@ -6,5 +6,5 @@ Works on Linux on Windows.
 
 cd into directory and run cmake
 
-# Prerequistes
+# Prerequisite
 libssh, boost, cmake 3.5+
